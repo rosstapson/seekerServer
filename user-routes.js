@@ -1,4 +1,3 @@
-
 import express from 'express';
 import _ from 'lodash';
 import config from './config';
@@ -7,6 +6,7 @@ import User from './models/User';
 import sanitizeHtml from 'sanitize-html';
 import nodemailer from 'nodemailer';
 import cuid from 'cuid';
+import slug from 'limax';
 
 var app = module.exports = express.Router();
 var transporter = nodemailer.createTransport({
@@ -31,35 +31,23 @@ var users = [
 ];
 
 function addUser(req, res) {
-  try {
-    console.log("User: " + req.body);
-    var user = new User(req.body);
-    user.userName = sanitizeHtml(user.userName);
-    user.email = sanitizeHtml(user.email);
-    
-    user.cuid = cuid();
-  } catch (err) {
-    console.log(err.message);
-    res
-      .status(500)
-      .send({errorMessage: err.message});
-  }
-  user.save((err, saved) => {
-    if (err) {
-      console.log("bugger: " + err.message);
-      res
-        .status(500)
-        .send({errorMessage: err.message});
-    }
-    //res.json({ user: saved });
-    return user;
-  });
+
+  //console.log("User: " + req.body.username);
+  var user = new User(req.body);
+  user.username = sanitizeHtml(user.username);
+  user.email = sanitizeHtml(user.email);
+  user.password = sanitizeHtml(user.password);
+  user.accessLevel = 1; // default to 'client' for now.
+  user.slug = slug(user.username.toLowerCase(), {lowercase: true});
+  user.cuid = cuid();
+
+  return user.save();
 }
 
-function createToken(user) {
+function createToken(username) {
   console.log("createToken: " + config.secret);
   return jwt.sign({
-    username: user.userName
+    username: username
   }, config.secret, {
     expiresIn: 60 * 60 * 24
   });
@@ -72,7 +60,7 @@ function mailToken(email, token) {
     to: email,
     subject: 'Please confirm your registration',
     html: '<b>Thank you for signing up for SeekerDNA Asset Register. To confirm your regist' +
-        'ration, please click <a href="http://localhost:3000/confirm/?id_token=' + token + '">here</a>. ✔ <br> This will expire in 24 hours.</b>'
+        'ration, please click <a href="http://localhost:3000/confirm/' + token + '">here</a>. ✔ <br> This will expire in 24 hours.</b>'
   };
   transporter.sendMail(mailOptions, function (error, info) {
     if (error) {
@@ -91,6 +79,7 @@ function getUserScheme(req) {
   // The POST contains a username and not an email
   if (req.body.username) {
     username = req.body.username;
+    console.log(username);
     type = 'username';
     userSearch = {
       username: username // The POST contains an email and not an username
@@ -108,71 +97,77 @@ function getUserScheme(req) {
 
 app
   .post('/users', function (req, res) {
-    var userScheme = getUserScheme(req);
-    if (!userScheme.username || !req.body.password) {
-      return res
-        .status(400)
-        .send({errorMessage: "You must send the username and the password"});
-    }
 
-    if (_.find(users, userScheme.userSearch)) {
+    var user = addUser(req, res).then(function (user) {
+      console.log("about to create token for user " + user.username);
+      var id_token = createToken(user.username);
+      mailToken(user.email, id_token);
       return res
-        .status(400)
-        .send({errorMessage: "A user with that username already exists"});
-    }
+        .status(201)
+        .send({username: user.userName, id_token: id_token});
+    }).catch(function (err) {
+      if (err.message == "User validation failed") {
+        return res
+          .status(400)
+          .send({errorMessage: "Username is not available"})
+      } else {
+        console.log("hmm: " + err.message);
+        return res
+          .status(400)
+          .send({errorMessage: err.message});
+      }
+    });
 
-    // var profile = _.pick(   req.body,  userScheme.type,  'username',  'email',
-    // 'password', 'extra'); profile.id = _   .max(users, 'id')   .id + 1;
-    // users.push(profile); // mongo call here.
-    var user = addUser(req, res);
-    var id_token = createToken(user);
-    mailToken(user.email, id_token);
-    res
-      .status(201)
-      .send({username: user.userName, id_token: id_token});
   });
 
 app.post('/sessions/create', function (req, res) {
   console.log(" user-routes.js: /sessions/create");
-  var userScheme = getUserScheme(req);
+  // var userScheme = getUserScheme(req);
 
-  if (!userScheme.username || !req.body.password) {
-    return res
-      .status(400)
-      .send({errorMessage: "You must send the username and the password"});
-  }
+  // if (!userScheme.username || !req.body.password) {
+  //   return res
+  //     .status(400)
+  //     .send({errorMessage: "You must send the username and the password"});
+  // }
 
-  var user = _.find(users, userScheme.userSearch);
-
-  if (!user) {
-    return res
-      .status(401)
-      .send({errorMessage: "Unknown username"});
-  }
-
-  if (user.password !== req.body.password) {
-    return res
-      .status(401)
-      .send({errorMessage: "Invalid password"});
-  }
-
-  res
-    .status(201)
-    .send({id_token: createToken(user)});
+  var user = User.findOne({username: req.body.username}).then(
+    function(user) {
+      if (user.password != req.body.password) { //hash this!
+        console.log(user.password + " vs " + req.body.password);
+ return res
+          .status(400)
+          .send({errorMessage: "Invalid password"});
+      }
+      else {
+        // set id_token on response
+        // set last_logged_in on user and update
+        res.status(201).send({id_token: createToken(user.username), username: user.username});
+      }
+    },
+    function(err) {
+       return res
+          .status(400)
+          .send({errorMessage: "Invalid username"});
+    }
+  ) 
 });
 
 app.post('/token', function (req, res) {
   var decoded = false;
-  console.log("token");
-  if (!req.body.id_token) {
+  console.log("here");
+  console.log("token secret: " + config.secret);
+  console.log("req.body: " + req.body.id_token);
+  if (!req.body) {
+    console.log("no token");
     return res
       .status(400)
       .send({errorMessage: "No token"});
   }
   try {
-    console.log("here");
-    decoded = jwt.verify(token, config.secret);
+    console.log("here. ");
+    decoded = jwt.verify(req.body.id_token, config.secret);
   } catch (err) {
+    console.log("Error: " + err.message);
     return res
       .status(400)
       .send({errorMessage: "Invalid token"});

@@ -1,14 +1,28 @@
-var logger = require('morgan'),
-  mongoose = require('mongoose'),
-  serverConfig = require('./config.js'),
-  cors = require('cors'),
-  http = require('http'),
-  express = require('express'),
-  errorhandler = require('errorhandler'),
-  dotenv = require('dotenv'),
-  bodyParser = require('body-parser');
+require("babel-register");  
 
-require("babel-register");
+// no es6 in this file, only in what's 'required'
+
+//import 'babel-register';
+// import logger from 'morgan';
+// import mongoose from 'mongoose';
+// import serverConfig from './config.js';
+// import cors from 'cors';
+// import http from 'http';
+// import express from 'express';
+// import errorhandler from 'errorhandler';
+// import dotenv from 'dotenv';
+// import bodyParser from 'body-parser';
+
+ var logger = require('morgan'),
+   mongoose = require('mongoose'),
+   serverConfig = require('./config.js'),
+   cors = require('cors'),
+   http = require('http'),
+   express = require('express'),
+   errorhandler = require('errorhandler'),
+   dotenv = require('dotenv'),
+   bodyParser = require('body-parser');
+
 
 // Set native promises as mongoose promise
 mongoose.Promise = global.Promise;
@@ -50,10 +64,11 @@ app.use(require('./protected-routes'));
 app.use(require('./user-routes'));
 
 var port = process.env.PORT || 3001;
-//console.log(serverConfig.port);
+console.log("port: " + serverConfig.port);
 
 http
   .createServer(app)
   .listen(port, function (err) {
     console.log('ZOMG! listening in http://localhost:' + port);
+    console.log('Let the saliva flow.');
   });

@@ -4,3 +4,4 @@ const config = {
   secret: "I drink and code things."
   
 };
+module.exports = config;
