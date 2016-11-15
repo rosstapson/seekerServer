@@ -62,6 +62,7 @@ console.log('node is running in NODE_ENV: ' + process.env.NODE_ENV);
 app.use(require('./anonymous-routes'));
 app.use(require('./protected-routes'));
 app.use(require('./user-routes'));
+app.use(require('./asset-routes'));
 
 var port = process.env.PORT || 3001;
 console.log("port: " + serverConfig.port);

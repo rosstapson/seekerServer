@@ -122,13 +122,7 @@ app
 
 app.post('/sessions/create', function (req, res) {
   console.log(" user-routes.js: /sessions/create");
-  // var userScheme = getUserScheme(req);
-
-  // if (!userScheme.username || !req.body.password) {
-  //   return res
-  //     .status(400)
-  //     .send({errorMessage: "You must send the username and the password"});
-  // }
+  
 
   var user = User.findOne({username: req.body.username}).then(
     function(user) {
