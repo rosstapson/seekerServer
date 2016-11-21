@@ -105,45 +105,47 @@ app
       return res
         .status(201)
         .send({username: user.userName, id_token: id_token});
-    }).catch(function (err) {
-      if (err.message == "User validation failed") {
-        return res
-          .status(400)
-          .send({errorMessage: "Username is not available"})
-      } else {
-        console.log("hmm: " + err.message);
-        return res
-          .status(400)
-          .send({errorMessage: err.message});
-      }
-    });
+    })
+      .catch(function (err) {
+        if (err.message == "User validation failed") {
+          return res
+            .status(400)
+            .send({errorMessage: "Username is not available"})
+        } else {
+          console.log("hmm: " + err.message);
+          return res
+            .status(400)
+            .send({errorMessage: err.message});
+        }
+      });
 
   });
 
 app.post('/sessions/create', function (req, res) {
   console.log(" user-routes.js: /sessions/create");
-  
 
-  var user = User.findOne({username: req.body.username}).then(
-    function(user) {
+  var user = User
+    .findOne({username: req.body.username})
+    .then(function (user) {
       if (user.password != req.body.password) { //hash this!
         console.log(user.password + " vs " + req.body.password);
- return res
-          .status(400)
+        return res
+          .status(401)
           .send({errorMessage: "Invalid password"});
+      } else {
+        // set id_token on response set last_logged_in on user and update
+        res
+          .status(201)
+          .send({
+            id_token: createToken(user.username),
+            username: user.username
+          });
       }
-      else {
-        // set id_token on response
-        // set last_logged_in on user and update
-        res.status(201).send({id_token: createToken(user.username), username: user.username});
-      }
-    },
-    function(err) {
-       return res
-          .status(400)
-          .send({errorMessage: "Invalid username"});
-    }
-  ) 
+    }, function (err) {
+      return res
+        .status(401)
+        .send({errorMessage: "Invalid username"});
+    })
 });
 
 app.post('/token', function (req, res) {
