@@ -121,6 +121,26 @@ const userSchema = new Schema({
         type: String,
         required: true
       },
+      itemCode: {
+        type: String,
+        required: false
+      },
+      location: {
+        type: String,
+        required: false
+      },
+      unitOfMeasure: {
+        type: String,
+        required: false
+      },
+      audited: {
+        type: String,
+        required: false
+      },
+      assetStatus: {
+        type: String,
+        required: false
+      },
       description: {
         type: String,
         required: false
@@ -134,6 +154,18 @@ const userSchema = new Schema({
         type: 'Date',
         default: Date.now,
         required: true
+      },
+      dateReported: {
+        type: 'Date',
+        required: false
+      },
+      caseNumber: {
+        type: String,
+        required: false
+      },
+      atPoliceStation: {
+        type: String,
+        required: false
       }
     }
   ]
