@@ -137,7 +137,7 @@ const userSchema = new Schema({
         type: String,
         required: false
       },
-      assetStatus: {
+      status: {
         type: String,
         required: false
       },
@@ -155,6 +155,10 @@ const userSchema = new Schema({
         default: Date.now,
         required: true
       },
+      capturedOrModifiedBy: {
+        type: String,
+        required: false
+      },      
       dateReported: {
         type: 'Date',
         required: false
@@ -166,7 +170,19 @@ const userSchema = new Schema({
       atPoliceStation: {
         type: String,
         required: false
-      }
+      },
+      nextAuditDate: {
+        type: Date,
+        required: false
+      },
+      appliedBy: {
+        type: String,
+        required: false
+      },
+      checkedBy: {
+        type: String,
+        required: false
+      },
     }
   ]
 });

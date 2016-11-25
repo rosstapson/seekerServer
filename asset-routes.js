@@ -34,7 +34,7 @@ app.post('/addasset', function (req, res) {
         //var tempAsset = req.body.asset;
 
         user.assets.push(req.body.asset);
-        user.dateUpdated = Date.now;
+        //user.dateUpdated = Date.now;
         user.save();
         res.status(200).send({ assets:user.assets });
       }   
