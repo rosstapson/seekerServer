@@ -40,7 +40,7 @@ function addUser(req, res) {
   user.accessLevel = 1; // default to 'client' for now.
   user.slug = slug(user.username.toLowerCase(), {lowercase: true});
   user.cuid = cuid();
-
+  
   return user.save();
 }
 
@@ -121,6 +121,53 @@ app
 
   });
 
+//this to retrieve userdetails, minus assets and cases, for purposes of updating them
+app.post('/userdetails', function(req, res) {
+  console.log('user-routes.js /userdetails');
+  console.log(req.body);
+  var user = User.findOne(
+    {username: req.body.username}, 
+    'username email password accessLevel companyName telephone contactPerson mobile address fax slug cuid dateAdded dateUpdated',
+  )
+  .then(
+    function(user){
+       res
+          .status(201)
+          .send(user);
+    },
+    function(err){
+      console.log(err);
+      return res
+        .status(401)
+        .send({errorMessage: "Invalid username"});}
+  );
+});
+app.post('/updateuser', function(req, res) {
+  console.log('user-routes.js /updateuser');
+  console.log(req.body.address.country);
+  var user = User.findOne(
+    {username: req.body.username}, 
+    'username email password accessLevel companyName telephone contactPerson mobile' + 
+    ' address fax slug cuid dateAdded dateUpdated',
+  )
+  .then(
+    function(user){
+      user.update(req.body).then(
+        function() {
+           res
+          .status(201)
+          .send({message: "Update successful"});
+        }
+      );
+      
+    },
+    function(err){
+      console.log(err);
+      return res
+        .status(401)
+        .send({errorMessage: "Invalid username"});}
+  );
+});
 app.post('/sessions/create', function (req, res) {
   console.log(" user-routes.js: /sessions/create");
 

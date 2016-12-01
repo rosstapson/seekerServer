@@ -125,6 +125,10 @@ const userSchema = new Schema({
         type: String,
         required: false
       },
+      imageUrls: [{
+        type: String,
+        required: false
+      }],
       location: {
         type: String,
         required: false

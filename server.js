@@ -1,6 +1,6 @@
 require("babel-register");  
 
-// no es6 in this file, only in what's 'required'
+// no es6 in this file, only in what's 'required' (feck.)
 
 //import 'babel-register';
 // import logger from 'morgan';
@@ -63,6 +63,7 @@ app.use(require('./anonymous-routes'));
 app.use(require('./protected-routes'));
 app.use(require('./user-routes'));
 app.use(require('./asset-routes'));
+app.use('/image', express.static('./users/images/'));
 
 var port = process.env.PORT || 3001;
 console.log("port: " + serverConfig.port);
