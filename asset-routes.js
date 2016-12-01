@@ -15,11 +15,12 @@ app.post('/file-upload', function(req, res) {
         console.log('here');
         username = value;
       }
+      if (!username) {
+        return res.status(400).send({errorMessage: "Username invalid"});
+      }
     });
     console.log('username: ' + username)
-    if (!username) {
-      return res.status(400).send({errorMessage: "Username invalid"});
-    }
+    
     var dir = './user_images/'+ username;
     if (!fs.existsSync(dir)){
       fs.mkdirSync(dir);
