@@ -1,23 +1,36 @@
 import express from 'express';
 import User from './models/User';
 import fs from 'fs';
+import busboy from 'connect-busboy';
 
 var app = module.exports = express.Router();
-
+app.use(busboy()); 
 app.post('/file-upload', function(req, res) {
-    // get the temporary location of the file
-
-    console.log(req.body.username);
-    var tmp_path = req.file.image.path;
-    // set where the file should actually exists - in this case it is in the "images" directory
-    var target_path = './users/images/' + req.files.image.name;
-    // move the file from the temporary location to the intended location
-    fs.rename(tmp_path, target_path, function(err) {
-        if (err) throw err;
-        // delete the temporary file, so that the explicitly set temporary upload dir does not get filled with unwanted files
-        fs.unlink(tmp_path, function() {
-            if (err) throw err;
-            res.send('File uploaded to: ' + target_path + ' - ' + req.files.image.size + ' bytes');
+    var fstream;
+    req.pipe(req.busboy);
+    var username = '';
+    req.busboy.on('field', function(fieldname, value) {
+      console.log( fieldname + ' : ' + value);
+      if (fieldname === 'username') {
+        console.log('here');
+        username = value;
+      }
+    });
+    console.log('username: ' + username)
+    if (!username) {
+      return res.status(400).send({errorMessage: "Username invalid"});
+    }
+    var dir = './user_images/'+ username;
+    if (!fs.existsSync(dir)){
+      fs.mkdirSync(dir);
+    } 
+    req.busboy.on('file', function (fieldname, file, filename) {
+        console.log("Uploading: " + filename); 
+        console.log("for user: " + req.body.username);
+        fstream = fs.createWriteStream(__dirname + dir + '/' + filename);
+        file.pipe(fstream);
+        fstream.on('close', function () {
+            res.redirect('back');
         });
     });
 });
