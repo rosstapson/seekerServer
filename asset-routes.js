@@ -2,6 +2,7 @@ import express from 'express';
 import User from './models/User';
 import fs from 'fs';
 import busboy from 'connect-busboy';
+import cuid from 'cuid';
 
 var app = module.exports = express.Router();
 app.use(busboy());
@@ -37,13 +38,20 @@ app.post('/file-upload', function (req, res) {
     if (!fs.existsSync(dir)){
       fs.mkdirSync(dir);
     }
+    var newName = renameFile(tempName);
     var oldPath = __dirname + '/user_images/' + tempName;
-    var newPath = __dirname + '/user_images/' + username + '/' + tempName;
+    var newPath = __dirname + '/user_images/' + username + '/' + newName;
+    console.log('newPath: ' + newPath);
     fs.renameSync(oldPath, newPath);
     res.status(201).send({imageUrl: newPath})
-  });
+  }); 
 
 });
+function renameFile(fileName) {
+  var arr = fileName.split(".");
+  return cuid() + '.' + arr[arr.length - 1]; //last array element presumably '.gif' or whatnot.
+}
+
 app.post('/assets', function (req, res) {
   console.log("asset-routes.js: /assets for:" + req.body.username);
 
