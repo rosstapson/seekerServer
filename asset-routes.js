@@ -12,22 +12,18 @@ app.post('/file-upload', function (req, res) {
   req.pipe(req.busboy);
   var tempName = '';
   var username = '';
+  var dnaCode = '';
   req
     .busboy
     .on('file', function (fieldname, file, filename) {
       
       fstream = fs.createWriteStream(__dirname + '/user_images/' + filename);
       file.pipe(fstream);
-      tempName = filename;
-      // fstream.on('close', function () {        
-      //   res
-      //     .status(201)
-      //     .send({filename: filename});
-      // });
+      tempName = filename;      
     });
   req.busboy.on('field', function(fieldName, value) {    
     if(fieldName === 'username') {username = value;}
-    
+    if(fieldName === 'dnaCode') {dnaCode = value;}
   });
   req.busboy.on('finish', function() {
     console.log(tempName + ',' + username);
@@ -43,14 +39,35 @@ app.post('/file-upload', function (req, res) {
     var newPath = __dirname + '/user_images/' + username + '/' + newName;
     console.log('newPath: ' + newPath);
     fs.renameSync(oldPath, newPath);
-    res.status(201).send({imageUrl: newPath})
+    console.log('dnaCode: ' + dnaCode);
+    updateAssetImageUrl(username, dnaCode, newName);
+    res.status(201).send({imageUrl: username + '/' + newName})
   }); 
+
+  function updateAssetImageUrl(username, dnaCode, newName) {
+    var _this = this;
+    var user = User
+    .findOne({username: username})
+    .then(function(user) {
+      for (var i = 0; i < user.assets.length; i++) {
+        if (user.assets[i].dnaCode === dnaCode) {
+          user.assets[i].imageUrls.push(username + '/' + newName);
+          user.save();
+          break;
+        }
+        
+      }
+    });
+      
+    
+  }
 
 });
 function renameFile(fileName) {
   var arr = fileName.split(".");
   return cuid() + '.' + arr[arr.length - 1]; //last array element presumably '.gif' or whatnot.
 }
+//function AddImageUrlToAsset(){};
 
 app.post('/assets', function (req, res) {
   console.log("asset-routes.js: /assets for:" + req.body.username);
