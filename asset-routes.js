@@ -7,6 +7,53 @@ import cuid from 'cuid';
 var app = module.exports = express.Router();
 app.use(busboy());
 
+app.post('/deleteimage', function(req, res) {
+  console.log("deleting image " + req.body.url 
+  + " for asset " 
+  + req.body.dnaCode 
+  + " for user "
+  + req.body.username);  
+  try {
+   fs.unlinkSync(__dirname + '/user_images/' + req.body.url);
+  }
+  catch(err) {
+    console.log(err);
+    
+  }
+  var assetInQuestion = null;
+  var tempUrls = null;
+  //establish db ref to file url
+  var user = User.findOne({username: req.body.username})
+  .then(function(user) {
+    assetInQuestion = user.assets.find((value) => {
+      console.log("asset:" + value.dnaCode);
+      return value.dnaCode === req.body.dnaCode;
+    });
+    tempUrls = assetInQuestion.imageUrls.filter((value) => {
+      console.log("here: " + value + " - compare: " + req.body.url);
+      console.log( value !== req.body.url);
+      return value !== req.body.url;
+    });
+    assetInQuestion.imageUrls = tempUrls;
+    assetInQuestion.set("dateUpdated", Date.now());    
+    //console.log(user.assets.imageUrls);
+    user.save();
+    res.status(201).send({message: "Image deleted"});
+   
+    
+  })
+  .catch((err) => {
+    console.log(err.message);
+     return res
+        .status(500)
+        .send({errorMessage: err.message});
+  });
+  
+  
+  
+});
+
+
 app.post('/file-upload', function (req, res) {
   var fstream;
   req.pipe(req.busboy);

@@ -21,15 +21,18 @@ require("babel-register");
    express = require('express'),
    errorhandler = require('errorhandler'),
    dotenv = require('dotenv'),
+   raven = require('raven'),
    bodyParser = require('body-parser');
 
-
+var client = new raven.Client('https://b69c7d4103c144b9924158a57b3dc3b1:b148565ff1084c749008dddc0c9bbe76@sentry.io/101038');
+client.patchGlobal();
 // Set native promises as mongoose promise
 mongoose.Promise = global.Promise;
 
 // MongoDB Connection
 mongoose.connect('mongodb://localhost:27017/seekerDNA', (error) => {
   if (error) {
+    client.captureException(error);
     console.error('Please make sure Mongodb is installed and running!'); // eslint-disable-line no-console
     throw error;
   }
