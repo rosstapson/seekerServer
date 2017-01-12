@@ -94,7 +94,27 @@ function getUserScheme(req) {
 
   return {username: username, type: type, userSearch: userSearch}
 }
+app.get('/users', function (req, res) {
+  console.log("user-routes.js: get users");
 
+  var user = User
+    .find()
+    .then(function (users) {
+      if (!users) {
+        res
+          .status(400)
+          .send({errorMessage: "Users not found"});
+      } else {
+        res
+          .status(200)
+          .send({assets: users});
+      }
+    }, function (err) {
+      return res
+        .status(400)
+        .send({errorMessage: err.message});
+    })
+});
 app
   .post('/users', function (req, res) {
 
@@ -185,7 +205,8 @@ app.post('/sessions/create', function (req, res) {
           .status(201)
           .send({
             id_token: createToken(user.username),
-            username: user.username
+            username: user.username, 
+            accessLevel: user.accessLevel
           });
       }
     }, function (err) {
