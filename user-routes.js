@@ -11,7 +11,7 @@ import slug from 'limax';
 
 var app = module.exports = express.Router();
 var transporter = nodemailer.createTransport({
-  service: 'Gmail',
+  host: config.mailServer,
   auth: {
     user: config.mailUser,
     pass: config.mailPassword
@@ -20,6 +20,7 @@ var transporter = nodemailer.createTransport({
     rejectUnauthorized: false
   }
 });
+
 
 function addUser(req, res) {
 
@@ -47,8 +48,8 @@ function mailToken(email, token) {
     from: 'SeekerDNA',
     to: email,
     subject: 'Please confirm your registration',
-    html: '<b>Thank you for signing up for SeekerDNA Asset Register. To confirm your regist' +
-        'ration, please click <a href="http://seekerdnasecure.co.za/confirm/' + token + '">here</a>. ✔ <br> This will expire in 24 hours.</b>'
+    html: '<b>Thank you for signing up for SeekerDNA Asset Register. verify your email' +
+        ', please click <a href="http://seekerdnasecure.co.za/confirm/' + token + '">here</a>. ✔ <br> This will expire in 24 hours.</b>'
   };
   transporter.sendMail(mailOptions, function (error, info) {
     if (error) {

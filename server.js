@@ -52,7 +52,6 @@ if (process.env.NODE_ENV === 'development') {
 
 console.log('node is running in NODE_ENV: ' + process.env.NODE_ENV);
 app.use(require('./anonymous-routes'));
-app.use(require('./protected-routes'));
 app.use(require('./user-routes'));
 app.use(require('./asset-routes'));
 app.use('/image', express.static('./user_images/'));
