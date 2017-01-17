@@ -23,7 +23,6 @@ var transporter = nodemailer.createTransport({
 
 function addUser(req, res) {
 
-  //console.log("User: " + req.body.username);
   var user = new User(req.body);
   user.username = sanitizeHtml(user.username);
   user.email = sanitizeHtml(user.email);
@@ -36,7 +35,6 @@ function addUser(req, res) {
 }
 
 function createToken(username) {
-  console.log("createToken: " + config.secret);
   return jwt.sign({
     username: username
   }, config.secret, {
@@ -67,7 +65,6 @@ function getUserScheme(req) {
   // The POST contains a username and not an email
   if (req.body.username) {
     username = req.body.username;
-    console.log(username);
     type = 'username';
     userSearch = {
       username: username // The POST contains an email and not an username
