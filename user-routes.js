@@ -8,13 +8,13 @@ import nodemailer from 'nodemailer';
 import cuid from 'cuid';
 import slug from 'limax';
 
+
 var app = module.exports = express.Router();
 var transporter = nodemailer.createTransport({
   service: 'Gmail',
   auth: {
-    user: 'ross.tapson.test@gmail.com',
-    pass: 'xxxx'
-
+    user: config.mailUser,
+    pass: config.mailPassword
   },
   tls: {
     rejectUnauthorized: false
@@ -44,7 +44,7 @@ function createToken(username) {
 
 function mailToken(email, token) {  
   var mailOptions = {
-    from: 'ross.test.tapson@gmail.com',
+    from: 'SeekerDNA',
     to: email,
     subject: 'Please confirm your registration',
     html: '<b>Thank you for signing up for SeekerDNA Asset Register. To confirm your regist' +
@@ -100,7 +100,7 @@ app.get('/users', function (req, res) {
 });
 app
   .post('/users', function (req, res) {
-
+console.log("user-routes.js: post users");
     var user = addUser(req, res).then(function (user) {
       var id_token = createToken(user.username);
       mailToken(user.email, id_token);

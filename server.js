@@ -30,7 +30,8 @@ client.patchGlobal();
 mongoose.Promise = global.Promise;
 
 // MongoDB Connection
-mongoose.connect('mongodb://USERNAME:PASSWORD@localhost:27017/seekerDNA', (error) => {
+mongoose.connect('mongodb://' + serverConfig.dbUser + ':'
+    + serverConfig.dbPassword + '@localhost:27017/seekerDNA', (error) => {
   if (error) {
     client.captureException(error);
     console.error('Please make sure Mongodb is installed and running!'); // eslint-disable-line no-console
@@ -75,5 +76,5 @@ http
   .createServer(app)
   .listen(port, function (err) {
     console.log('ZOMG! listening in http://localhost:' + port);
-    console.log('Let the saliva flow.');
+    console.log('Admin branch.');
   });
