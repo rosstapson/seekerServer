@@ -13,22 +13,12 @@ var transporter = nodemailer.createTransport({
   service: 'Gmail',
   auth: {
     user: 'ross.tapson.test@gmail.com',
-    pass: 'mrstapson1'
+    pass: '***'
   },
   tls: {
     rejectUnauthorized: false
   }
 });
-
-// XXX: This should be a database of users :).
-var users = [
-  {
-    id: 1,
-    email: 'ross@gonto',
-    username: 'gonto',
-    password: 'gonto'
-  }
-];
 
 function addUser(req, res) {
 
@@ -53,25 +43,22 @@ function createToken(username) {
   });
 }
 
-function mailToken(email, token) {
-  // var html = '<b>Hello world ✔</b>';
+function mailToken(email, token) {  
   var mailOptions = {
     from: 'ross.test.tapson@gmail.com',
     to: email,
     subject: 'Please confirm your registration',
     html: '<b>Thank you for signing up for SeekerDNA Asset Register. To confirm your regist' +
-        'ration, please click <a href="http://localhost:3000/confirm/' + token + '">here</a>. ✔ <br> This will expire in 24 hours.</b>'
+        'ration, please click <a href="http://seekerdnasecure.co.za/confirm/' + token + '">here</a>. ✔ <br> This will expire in 24 hours.</b>'
   };
   transporter.sendMail(mailOptions, function (error, info) {
     if (error) {
       return console.log(error);
     }
-    console.log('Message sent: ' + info.response);
   });
 }
 
 function getUserScheme(req) {
-  console.log("user-routes.js getUserScheme");
   var username;
   var type;
   var userSearch = {};
@@ -95,8 +82,6 @@ function getUserScheme(req) {
   return {username: username, type: type, userSearch: userSearch}
 }
 app.get('/users', function (req, res) {
-  console.log("user-routes.js: get users");
-
   var user = User
     .find()
     .then(function (users) {
@@ -119,7 +104,6 @@ app
   .post('/users', function (req, res) {
 
     var user = addUser(req, res).then(function (user) {
-      console.log("about to create token for user " + user.username);
       var id_token = createToken(user.username);
       mailToken(user.email, id_token);
       return res
@@ -143,8 +127,7 @@ app
 
 //this to retrieve userdetails, minus assets and cases, for purposes of updating them
 app.post('/userdetails', function(req, res) {
-  console.log('user-routes.js /userdetails');
-  console.log(req.body);
+  
   var user = User.findOne(
     {username: req.body.username}, 
     'username email password accessLevel companyName telephone contactPerson mobile address fax slug cuid dateAdded dateUpdated',
@@ -163,8 +146,7 @@ app.post('/userdetails', function(req, res) {
   );
 });
 app.post('/updateuser', function(req, res) {
-  console.log('user-routes.js /updateuser');
-  console.log(req.body.address.country);
+  
   var user = User.findOne(
     {username: req.body.username}, 
     'username email password accessLevel companyName telephone contactPerson mobile' + 
@@ -189,7 +171,7 @@ app.post('/updateuser', function(req, res) {
   );
 });
 app.post('/sessions/create', function (req, res) {
-  console.log(" user-routes.js: /sessions/create");
+  
 
   var user = User
     .findOne({username: req.body.username})
