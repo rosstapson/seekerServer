@@ -2,17 +2,6 @@ require("babel-register");
 
 // no es6 in this file, only in what's 'required' (feck.)
 
-//import 'babel-register';
-// import logger from 'morgan';
-// import mongoose from 'mongoose';
-// import serverConfig from './config.js';
-// import cors from 'cors';
-// import http from 'http';
-// import express from 'express';
-// import errorhandler from 'errorhandler';
-// import dotenv from 'dotenv';
-// import bodyParser from 'body-parser';
-
  var logger = require('morgan'),
    mongoose = require('mongoose'),
    serverConfig = require('./config.js'),
@@ -26,10 +15,9 @@ require("babel-register");
 
 var client = new raven.Client('https://b69c7d4103c144b9924158a57b3dc3b1:b148565ff1084c749008dddc0c9bbe76@sentry.io/101038');
 client.patchGlobal();
-// Set native promises as mongoose promise
+
 mongoose.Promise = global.Promise;
 
-// MongoDB Connection
 mongoose.connect('mongodb://' + serverConfig.dbUser + ':'
     + serverConfig.dbPassword + '@localhost:27017/seekerDNA', (error) => {
   if (error) {
