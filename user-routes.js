@@ -13,7 +13,7 @@ var transporter = nodemailer.createTransport({
   service: 'Gmail',
   auth: {
     user: 'ross.tapson.test@gmail.com',
-    pass: 'mrstapson1'
+    pass: 'Mrstapson1'
   },
   tls: {
     rejectUnauthorized: false
@@ -56,7 +56,7 @@ function createToken(username) {
 function mailToken(email, token) {
   // var html = '<b>Hello world ✔</b>';
   var mailOptions = {
-    from: 'ross.test.tapson@gmail.com',
+    from: 'SeekerDNA',
     to: email,
     subject: 'Please confirm your registration',
     html: '<b>Thank you for signing up for SeekerDNA Asset Register. To confirm your regist' +
@@ -117,7 +117,7 @@ app.get('/users', function (req, res) {
 });
 app
   .post('/users', function (req, res) {
-
+console.log("user-routes.js: post users");
     var user = addUser(req, res).then(function (user) {
       console.log("about to create token for user " + user.username);
       var id_token = createToken(user.username);
