@@ -178,10 +178,9 @@ app.post('/mailpasswordreset', function(req, res) {
         .send( {errorMessage: "Invalid email"} );
     }
   );
-});
-    }
-  )
-}
+});  
+  
+
 app.post('/updateuser', function(req, res) {
   
   var user = User.findOne(
