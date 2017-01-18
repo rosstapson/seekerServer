@@ -43,6 +43,20 @@ function createToken(username) {
   });
 }
 
+function mailPasswordReset(email, token) {  
+  var mailOptions = {
+    from: 'SeekerDNA',
+    to: email,
+    subject: 'Password Reset',
+    html: '<b> To reset your password for SeekerDNASecure.co.za, please click <a href="http://seekerdnasecure.co.za/resetpassword/' + token + '">here</a>. ✔ <br> This link will expire in 24 hours.</b>'
+  };
+  transporter.sendMail(mailOptions, function (error, info) {
+    if (error) {
+      return console.log(error);
+    }
+  });
+}
+
 function mailToken(email, token) {  
   var mailOptions = {
     from: 'SeekerDNA',
@@ -101,7 +115,7 @@ app.get('/users', function (req, res) {
 });
 app
   .post('/users', function (req, res) {
-console.log("user-routes.js: post users");
+
     var user = addUser(req, res).then(function (user) {
       var id_token = createToken(user.username);
       mailToken(user.email, id_token);
@@ -144,6 +158,30 @@ app.post('/userdetails', function(req, res) {
         .send({errorMessage: "Invalid username"});}
   );
 });
+app.post('/mailpasswordreset', function(req, res) {
+  var user = User.findOne(
+    {email: req.body.email},
+    'username email'
+  )
+  .then(
+    function(user) {
+      var id_token = createToken(user.username);
+      mailPasswordReset(req.body.email, id_token);
+      return res
+        .status(200)
+        .send();
+    },
+    function(err) {
+      console.log(err);
+      return res
+        .status(401)
+        .send( {errorMessage: "Invalid email"} );
+    }
+  );
+});
+    }
+  )
+}
 app.post('/updateuser', function(req, res) {
   
   var user = User.findOne(
