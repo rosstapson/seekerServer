@@ -48,7 +48,7 @@ function mailPasswordReset(email, token) {
     to: email,
     subject: 'Password Reset',
     html: '<b>To reset your password for SeekerDNASecure.co.za, please click <a href="http' +
-        '://seekerdnasecure.co.za/resetpassword/' + token + '">here</a>. ✔ <br> This link will expire in 24 hours.</b>'
+        '://seekerdnasecure.co.za/resetuserpassword/' + token + '">here</a>. ✔ <br> This link will expire in 24 hours.</b>'
   };
    transporter.sendMail(mailOptions, function (error, info) {   
      if (error) {   
@@ -185,7 +185,7 @@ app.post('/mailpasswordreset', function (req, res) {
     });
 });
 
-app.post('/resetpassword', function (req, res) {
+app.post('/resetuserpassword', function (req, res) {
   
   var decoded = jwt.verify(req.body.id_token, config.secret);
   var password = req.body.password;
