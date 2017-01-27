@@ -50,7 +50,7 @@ function mailPasswordReset(email, token) {
         to: email,
         subject: 'Password Reset',
         html: '<b>To reset your password for SeekerDNASecure.co.za, please click <a href="http:' +
-            '//seekerdnasecure.co.za/resetuserpassword/' + token + '">here</a>. ✔ <br> This link will expire in 24 hours.</b>'
+            '//seekerdnasecure.co.za:3001/api/resetuserpassword/' + token + '">here</a>. ✔ <br> This link will expire in 24 hours.</b>'
     };
     transporter.sendMail(mailOptions, function(error, info) {
         if (error) {
