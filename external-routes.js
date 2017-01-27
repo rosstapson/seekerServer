@@ -12,6 +12,10 @@ var app = module.exports = express.Router();
 var htmlHeader = "<!DOCTYPE html><html lang=\"en\"><head><meta charset=\"utf-8\"><meta name=\"" +
     "\"viewport\" content=\"width=device-width,initial-scale=1\"><link rel=\"icon\" href" +
     "=\"http://seekerdnasecure.co.za:3001/favicon.ico\"><title>Seeker DNA Asset Register</title>" +
+    "</head>";
+var htmlHeaderWithPasswordValidation = "<!DOCTYPE html><html lang=\"en\"><head><meta charset=\"utf-8\"><meta name=\"" +
+    "\"viewport\" content=\"width=device-width,initial-scale=1\"><link rel=\"icon\" href" +
+    "=\"http://seekerdnasecure.co.za:3001/favicon.ico\"><title>Seeker DNA Asset Register</title>" +
     '<script>function submitForm() { var password = document.getElementById("password"), passwordConfirm = document.getElementById("passwordConfirm");function validatePassword(){   if(password.value != passwordConfirm.value) {     passwordConfirm.setCustomValidity("Passwords Don\'t Match");   } else {     passwordConfirm.setCustomValidity(\'\');   } } password.onchange = validatePassword; passwordConfirm.onkeyup = validatePassword; }</script></head>';
 
 var htmlBodyTagAndLogo = '<body><div style=" margin: auto;"><img src="http://seekerdnasecure.co.za:3001/logo.png" style="height: 200px; display: block; margin: auto;" alt="logo"/></div>';
@@ -45,7 +49,7 @@ app.get('/api/resetuserpassword/:id_token', function(req, res) {
     var user = User
         .findOne({ username: decoded.username })
         .then(function(user) {
-            res.status(200).send(htmlHeader + htmlBodyTagWithOnload +
+            res.status(200).send(htmlHeaderWithPasswordValidation + htmlBodyTagWithOnload +
                 htmlForm + loadInputs + id_token + endLoadInputs + "</body></html>");
         })
         .catch(function(err) {
