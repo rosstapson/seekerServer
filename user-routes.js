@@ -26,6 +26,7 @@ function addUser(req, res) {
     var user = new User(req.body);
     user.username = sanitizeHtml(user.username);
     user.email = sanitizeHtml(user.email);
+    user.isVerified = false;
     user.password = sanitizeHtml(user.password);
     user.accessLevel = 1; // default to 'client' for now.
     user.slug = slug(user.username.toLowerCase(), { lowercase: true });
@@ -48,8 +49,8 @@ function mailPasswordReset(email, token) {
         from: '"SeekerDNA" <dnanoreply@seekerdna.co.za>',
         to: email,
         subject: 'Password Reset',
-        html: '<b>To reset your password for SeekerDNASecure.co.za, please click <a href="http' +
-            '://seekerdnasecure.co.za/resetuserpassword/' + token + '">here</a>. ✔ <br> This link will expire in 24 hours.</b>'
+        html: '<b>To reset your password for SeekerDNASecure.co.za, please click <a href="http:' +
+            '//seekerdnasecure.co.za/resetuserpassword/' + token + '">here</a>. ✔ <br> This link will expire in 24 hours.</b>'
     };
     transporter.sendMail(mailOptions, function(error, info) {
         if (error) {
@@ -58,14 +59,13 @@ function mailPasswordReset(email, token) {
     });
 }
 
-
 function mailToken(email, token) {
     var mailOptions = {
         from: '"SeekerDNA" <dnanoreply@seekerdna.co.za>',
         to: email,
         subject: 'Please confirm your registration',
         html: '<b>Thank you for signing up for SeekerDNA Asset Register. verify your email, ple' +
-            'ase click <a href="http://seekerdnasecure.co.za:3001/confirm/' + token + '">here</a>. ✔ <br> This will expire in 24 hours.</b>'
+            'ase click <a href="http://seekerdnasecure.co.za:3001/api/confirm/' + token + '">here</a>. ✔ <br> This will expire in 24 hours.</b>'
     };
     transporter.sendMail(mailOptions, function(error, info) {
         if (error) {
@@ -141,8 +141,8 @@ app.post('/users', function(req, res) {
 
 });
 
-// this to retrieve userdetails, minus assets and cases, for purposes of updating
-// them
+// this to retrieve userdetails, minus assets and cases, for purposes of
+// updating them
 app.post('/userdetails', function(req, res) {
 
     var user = User.findOne({
@@ -163,7 +163,9 @@ app.post('/userdetails', function(req, res) {
 app.post('/mailpasswordreset', function(req, res) {
     var username = req.body.username;
     if (!username || username === '') {
-        return res.status(401).send({ errorMessage: 'Invalid Username' });
+        return res
+            .status(401)
+            .send({ errorMessage: 'Invalid Username' });
     }
     var user = User.findOne({
             username: req.body.username
@@ -240,14 +242,21 @@ app.post('/sessions/create', function(req, res) {
                     .status(401)
                     .send({ errorMessage: "Invalid password" });
             } else {
+                if (!user.isVerified) {
+                    return res
+                        .status(401)
+                        .send({ errorMessage: "Email not verified." });
+                } else {
+                    res
+                        .status(201)
+                        .send({
+                            id_token: createToken(user.username),
+                            username: user.username,
+                            accessLevel: user.accessLevel
+                        });
+                }
                 // set id_token on response set last_logged_in on user and update
-                res
-                    .status(201)
-                    .send({
-                        id_token: createToken(user.username),
-                        username: user.username,
-                        accessLevel: user.accessLevel
-                    });
+
             }
         }, function(err) {
             return res
