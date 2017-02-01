@@ -30,12 +30,11 @@ mongoose.connect('mongodb://' + serverConfig.dbUser + ':' +
     });
 var app = express();
 var httpApp = express();
-var port = process.env.PORT || 3001;
-var httpPort = 3000;
 
-httpApp.set(httpPort);
 
-app.set(port);
+httpApp.set(serverConfig.httpPort);
+
+app.set(serverConfig.port);
 
 httpApp.get("*", function (req, res, next) {
     res.redirect("https://" + req.headers.host + "/" + req.path);
@@ -78,13 +77,13 @@ app.use(require('./external-routes'));
 
 console.log("port: " + serverConfig.port);
 
-http.createServer(httpApp).listen(httpApp.get('port'), function() {
+http.createServer(httpApp).listen(serverConfig.httpPort, function() {
     console.log("ZOMG!");
-    console.log('Express HTTP server listening on port ' + httpApp.get('port'));
+    console.log('Express HTTP server listening on port ' + serverConfig.httpPort);
 });
 
-https.createServer(httpsOptions, app).listen(app.get('port'), function() {
-    console.log('Express HTTPS server listening on port ' + app.get('port'));
+https.createServer(httpsOptions, app).listen(serverConfig.port, function() {
+    console.log('Express HTTPS server listening on port ' + serverConfig.port);
     console.log("HTTPS branch");
 });
 
