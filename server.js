@@ -7,10 +7,12 @@ var logger = require('morgan'),
     serverConfig = require('./config.js'),
     cors = require('cors'),
     http = require('http'),
+    https = require('https'),
     express = require('express'),
     errorhandler = require('errorhandler'),
     dotenv = require('dotenv'),
     raven = require('raven'),
+    fs = require('fs'),
     bodyParser = require('body-parser');
 
 var client = new raven.Client('https://b69c7d4103c144b9924158a57b3dc3b1:b148565ff1084c749008dddc0c9bbe76@sentry.io/101038');
@@ -27,7 +29,22 @@ mongoose.connect('mongodb://' + serverConfig.dbUser + ':' +
         }
     });
 var app = express();
+var httpApp = express();
+var port = process.env.PORT || 3001;
+var httpPort = 3000;
 
+httpApp.set(httpPort);
+
+app.set(port);
+
+httpApp.get("*", function (req, res, next) {
+    res.redirect("https://" + req.headers.host + "/" + req.path);
+});
+
+var httpsOptions = {
+    key: fs.readFileSync("/home/seeker/seekerdnasecure.co.za.key"),
+    cert: fs.readFileSync("/home/seeker/seekerdnasecure.co.za.chained.crt")
+};
 dotenv.load();
 
 // Parsers old version of line app.use(bodyParser.urlencoded()); new version of
@@ -58,12 +75,22 @@ app.use(require('./asset-routes'));
 app.use('/image', express.static('./user_images/'));
 app.use(require('./external-routes'));
 
-var port = process.env.PORT || 3001;
+
 console.log("port: " + serverConfig.port);
 
-http
-    .createServer(app)
-    .listen(port, function(err) {
-        console.log('ZOMG! listening in http://localhost:' + port);
-        console.log('Admin branch.');
-    });
+http.createServer(httpApp).listen(httpApp.get('port'), function() {
+    console.log("ZOMG!");
+    console.log('Express HTTP server listening on port ' + httpApp.get('port'));
+});
+
+https.createServer(httpsOptions, app).listen(app.get('port'), function() {
+    console.log('Express HTTPS server listening on port ' + app.get('port'));
+    console.log("HTTPS branch");
+});
+
+// http
+//     .createServer(app)
+//     .listen(port, function(err) {
+//         console.log('ZOMG! listening in http://localhost:' + port);
+//         console.log('Admin branch.');
+//     });
