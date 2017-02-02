@@ -115,7 +115,7 @@ app.post('/api/resetuserpassword/:id_token', function (req, res) {
                 .hash(plainPassword, 10)
                 .then(function (hash) {
                     
-                    user.password = req.body.password;
+                    user.password = hash;
                     user.save();
                     res
                         .status(200)
