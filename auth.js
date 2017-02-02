@@ -1,4 +1,5 @@
 export function checkToken(req) {
-  console.log(req.body.id_token);
+  var token = req.body.token || req.query.token;
+  console.log(token);
   return true;
 }

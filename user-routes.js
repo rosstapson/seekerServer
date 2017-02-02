@@ -39,8 +39,7 @@ function addUser(req, res) {
     return user.save();
 }
 
-function createToken(username) {
-    console.log(config.secret);
+function createToken(username) {    
     return jwt.sign({
         username: username
     }, config.secret, {
