@@ -9,7 +9,7 @@ import cuid from 'cuid';
 import slug from 'limax';
 import util from 'util';
 import bcrypt from 'bcrypt';
-import auth from './auth';
+import { checkToken } from './auth';
 
 var app = module.exports = express.Router();
 var transporter = nodemailer.createTransport({
@@ -102,7 +102,7 @@ function getUserScheme(req) {
 }
 app
     .get('/users', function(req, res) {
-        if (auth.checkToken(req)) {
+        if (!checkToken(req)) {
             return res.status(401).send({errorMessage: "Invalid token!"})
         }
         var user = User
