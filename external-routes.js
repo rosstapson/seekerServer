@@ -31,6 +31,7 @@ var endLoadInputs = '";  ' +
 //url format:
 //https://seekerdnasecure.co.za:3002/api/resetuserpassword/eyJhbGciOiJIUzI1NiIsInR5cCetcetcetc...
 //example for dev: https://localhost:3002/api/resetuserpassword/eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3QzIiwiaWF0IjoxNDg0OTAzNzUwLCJleHAiOjE0ODQ5OTAxNTB9.vxtKinh4bHCaRaA8xYi_lKars10ac7sOVVkup1bxbzE
+
 app.get('/api/resetuserpassword/:id_token', function(req, res) {
     var id_token = req.params.id_token;
     if (!id_token) {
@@ -39,8 +40,8 @@ app.get('/api/resetuserpassword/:id_token', function(req, res) {
     }
     var decoded = null;
     try {
-        //decoded = jwt.verify(id_token, config.secret);
-        decoded = jwt.verify(id_token, config.secret, { ignoreExpiration: true }); //just for debuggery
+        decoded = jwt.verify(id_token, config.secret);
+        //decoded = jwt.verify(id_token, config.secret, { ignoreExpiration: true }); //just for debuggery
     } catch (err) {
         console.log(err.message);
         return res.status(404).send(err.message);
@@ -65,8 +66,8 @@ app.post('/api/resetuserpassword/:id_token', function(req, res) {
     }
     var decoded = null;
     try {
-        //decoded = jwt.verify(id_token, config.secret);
-        decoded = jwt.verify(id_token, config.secret, { ignoreExpiration: true }); //just for debuggery
+        decoded = jwt.verify(id_token, config.secret);
+        //decoded = jwt.verify(id_token, config.secret, { ignoreExpiration: true }); //just for debuggery
     } catch (err) {
         console.log(err.message);
         return res.status(404).send(err.message);
@@ -95,8 +96,8 @@ app.get('/api/confirm/:id_token', function(req, res) {
     }
     var decoded = null;
     try {
-        //decoded = jwt.verify(id_token, config.secret);
-        decoded = jwt.verify(id_token, config.secret, { ignoreExpiration: true }); //just for debuggery
+        decoded = jwt.verify(id_token, config.secret);
+        //decoded = jwt.verify(id_token, config.secret, { ignoreExpiration: true }); //just for debuggery
     } catch (err) {
         console.log(err.message);
         return res.status(404).send(err.message);
