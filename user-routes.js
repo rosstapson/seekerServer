@@ -240,7 +240,7 @@ app.post('/sessions/create', function(req, res) {
     var user = User
         .findOne({ username: req.body.username })
         .then(function(user) {
-            if (bcrypt.compareSync(req.body.password, user.password)) {
+            if (!bcrypt.compareSync(req.body.password, user.password)) {
             
                 return res
                     .status(401)
