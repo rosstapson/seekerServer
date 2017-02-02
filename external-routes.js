@@ -114,8 +114,7 @@ app.post('/api/resetuserpassword/:id_token', function (req, res) {
             bcrypt
                 .hash(plainPassword, 10)
                 .then(function (hash) {
-                    console.log("hash: " + hash);
-                    console.log("original: " + plainPassword)
+                    
                     user.password = req.body.password;
                     user.save();
                     res

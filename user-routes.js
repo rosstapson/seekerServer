@@ -8,6 +8,7 @@ import nodemailer from 'nodemailer';
 import cuid from 'cuid';
 import slug from 'limax';
 import util from 'util';
+import bcrypt from 'bcrypt';
 
 var app = module.exports = express.Router();
 var transporter = nodemailer.createTransport({
@@ -27,7 +28,9 @@ function addUser(req, res) {
     user.username = sanitizeHtml(user.username);
     user.email = sanitizeHtml(user.email);
     user.isVerified = false;
-    user.password = sanitizeHtml(user.password);
+    var plainTextPassword = sanitizeHtml(user.password);
+    var hash = bcrypt.hashSync(plainTextPassword, 10);
+    user.password = hash;
     user.accessLevel = 1; // default to 'client' for now.
     user.slug = slug(user.username.toLowerCase(), { lowercase: true });
     user.cuid = cuid();
@@ -172,9 +175,7 @@ app.post('/mailpasswordreset', function(req, res) {
         }, 'username email')
         .then(function(user) {
             var id_token = createToken(user.username);
-            console.log("email:" + user.email);
-            console.log("token: " + id_token);
-
+            
             mailPasswordReset(user.email, id_token);
 
             return res
@@ -192,7 +193,8 @@ app.post('/mailpasswordreset', function(req, res) {
 app.post('/resetuserpassword', function(req, res) {
 
     var decoded = jwt.verify(req.body.id_token, config.secret);
-    var password = req.body.password;
+    var plainPassword = req.body.password;
+    var password = bcrypt.hashSync(plainPassword, 10);
 
     var user = User
         .findOne({ username: decoded.username })
@@ -216,6 +218,8 @@ app.post('/updateuser', function(req, res) {
             }, 'username email password accessLevel companyName telephone contactPerson mobile a' +
             'ddress fax slug cuid dateAdded dateUpdated', )
         .then(function(user) {
+            var hash = bcrypt.hashSync(req.body.password, 10);
+            req.body.password = hash;
             user
                 .update(req.body)
                 .then(function() {
@@ -236,8 +240,8 @@ app.post('/sessions/create', function(req, res) {
     var user = User
         .findOne({ username: req.body.username })
         .then(function(user) {
-            if (user.password != req.body.password) { //hash this!
-                console.log(user.password + " vs " + req.body.password);
+            if (bcrypt.compareSync(req.body.password, user.password)) {
+            
                 return res
                     .status(401)
                     .send({ errorMessage: "Invalid password" });
