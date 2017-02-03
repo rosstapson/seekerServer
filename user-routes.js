@@ -99,10 +99,12 @@ function getUserScheme(req) {
 
     return { username: username, type: type, userSearch: userSearch }
 }
+
+
 app
     .get('/users', function(req, res) {
         if (!checkToken(req)) {
-            return res.status(401).send({errorMessage: "Invalid token!"})
+            return res.status(401).send({errorMessage: "Invalid token"})
         }
         var user = User
             .find()
@@ -150,7 +152,9 @@ app.post('/users', function(req, res) {
 // this to retrieve userdetails, minus assets and cases, for purposes of
 // updating them
 app.post('/userdetails', function(req, res) {
-
+    if (!checkToken(req)) {
+            return res.status(401).send({errorMessage: "Invalid token"})
+    }
     var user = User.findOne({
                 username: req.body.username
             }, 'username email password accessLevel companyName telephone contactPerson mobile a' +
@@ -215,7 +219,9 @@ app.post('/resetuserpassword', function(req, res) {
 });
 
 app.post('/updateuser', function(req, res) {
-
+    if (!checkToken(req)) {
+            return res.status(401).send({errorMessage: "Invalid token"})
+    }
     var user = User.findOne({
                 username: req.body.username
             }, 'username email password accessLevel companyName telephone contactPerson mobile a' +

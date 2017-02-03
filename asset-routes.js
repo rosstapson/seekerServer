@@ -3,11 +3,15 @@ import User from './models/User';
 import fs from 'fs';
 import busboy from 'connect-busboy';
 import cuid from 'cuid';
+import {checkToken} from './auth';
 
 var app = module.exports = express.Router();
 app.use(busboy());
 
 app.post('/deleteimage', function(req, res) {
+  if (!checkToken(req)) {
+            return res.status(401).send({errorMessage: "Invalid token"})
+    }
   console.log("deleting image " + req.body.url 
   + " for asset " 
   + req.body.dnaCode 
@@ -117,7 +121,9 @@ function renameFile(fileName) {
 //function AddImageUrlToAsset(){};
 
 app.post('/assets', function (req, res) {
-  console.log("asset-routes.js: /assets for:" + req.body.username);
+  if (!checkToken(req)) {
+            return res.status(401).send({errorMessage: "Invalid token"})
+  }
 
   var user = User
     .findOne({username: req.body.username})
@@ -138,7 +144,9 @@ app.post('/assets', function (req, res) {
     })
 });
 app.post('/addasset', function (req, res) {
-  console.log("asset-routes.js: /addasset for:" + req.body.username);
+  if (!checkToken(req)) {
+            return res.status(401).send({errorMessage: "Invalid token"})
+    }
 
   var user = User
     .findOne({username: req.body.username})
@@ -166,7 +174,9 @@ app.post('/addasset', function (req, res) {
     })
 });
 app.post('/updateasset', function (req, res) {
-  console.log("asset-routes.js: /update asset for:" + req.body.username);
+  if (!checkToken(req)) {
+            return res.status(401).send({errorMessage: "Invalid token"})
+    }
 
   var user = User
     .findOne({username: req.body.username})
@@ -205,7 +215,9 @@ app.post('/updateasset', function (req, res) {
     })
 });
 app.post('/deleteasset', function (req, res) {
-  console.log("asset-routes.js: /deleteasset for:" + req.body.username);
+  if (!checkToken(req)) {
+            return res.status(401).send({errorMessage: "Invalid token"})
+    }
 
   var user = User
     .findOne({username: req.body.username})
