@@ -51,6 +51,7 @@ dotenv.load();
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(cors());
+httpApp.use(cors());
 // folder for static images
 app.use(express.static('img'));
 app.use(function(err, req, res, next) {
