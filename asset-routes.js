@@ -12,11 +12,11 @@ app.post('/deleteimage', function(req, res) {
   if (!checkToken(req)) {
             return res.status(401).send({errorMessage: "Invalid token"})
     }
-  console.log("deleting image " + req.body.url 
-  + " for asset " 
-  + req.body.dnaCode 
-  + " for user "
-  + req.body.username);  
+  // console.log("deleting image " + req.body.url 
+  // + " for asset " 
+  // + req.body.dnaCode 
+  // + " for user "
+  // + req.body.username);  
   try {
    fs.unlinkSync(__dirname + '/user_images/' + req.body.url);
   }
@@ -30,12 +30,12 @@ app.post('/deleteimage', function(req, res) {
   var user = User.findOne({username: req.body.username})
   .then(function(user) {
     assetInQuestion = user.assets.find((value) => {
-      console.log("asset:" + value.dnaCode);
+      //console.log("asset:" + value.dnaCode);
       return value.dnaCode === req.body.dnaCode;
     });
     tempUrls = assetInQuestion.imageUrls.filter((value) => {
-      console.log("here: " + value + " - compare: " + req.body.url);
-      console.log( value !== req.body.url);
+      // console.log("here: " + value + " - compare: " + req.body.url);
+      // console.log( value !== req.body.url);
       return value !== req.body.url;
     });
     assetInQuestion.imageUrls = tempUrls;
@@ -59,6 +59,9 @@ app.post('/deleteimage', function(req, res) {
 
 
 app.post('/file-upload', function (req, res) {
+  if (!checkToken(req)) {
+            return res.status(401).send({errorMessage: "Invalid token"})
+    }
   var fstream;
   req.pipe(req.busboy);
   var tempName = '';
