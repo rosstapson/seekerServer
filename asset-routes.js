@@ -4,6 +4,7 @@ import fs from 'fs';
 import busboy from 'connect-busboy';
 import cuid from 'cuid';
 import {checkToken} from './auth';
+import cors from 'cors';
 
 var app = module.exports = express.Router();
 app.use(busboy());
@@ -59,7 +60,7 @@ app.post('/deleteimage', function(req, res) {
 
 app.options('/file-upload', cors());
 app.post('/file-upload', function (req, res) {
-  
+  console.dir(req.body); 
   if (!checkToken(req)) {
             return res.status(401).send({errorMessage: "Invalid token"})
     }
@@ -93,6 +94,9 @@ app.post('/file-upload', function (req, res) {
     var oldPath = __dirname + '/user_images/' + tempName;
     var newPath = __dirname + '/user_images/' + username + '/' + newName;
     console.log('newPath: ' + newPath);
+    if (!fs.existsSync(oldPath)) {
+	console.log("feck.");
+    }
     fs.renameSync(oldPath, newPath);
     console.log('dnaCode: ' + dnaCode);
     updateAssetImageUrl(username, dnaCode, newName);
