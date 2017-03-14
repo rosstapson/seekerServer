@@ -4,6 +4,7 @@ import fs from 'fs';
 import busboy from 'connect-busboy';
 import cuid from 'cuid';
 import {checkToken} from './auth';
+import cors from 'cors';
 
 var app = module.exports = express.Router();
 app.use(busboy());

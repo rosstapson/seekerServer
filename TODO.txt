@@ -1,0 +1,6 @@
+fix the url in the mail to force it to POST - as in here:
+http://stackoverflow.com/questions/6210900/how-to-pass-post-parameters-in-a-url
+
+fix the node api routes so that those that should be secure verify the token on each call.
+the token should be sent as body.config, and set as such on the client side.
+
