@@ -57,8 +57,9 @@ app.post('/deleteimage', function(req, res) {
   
 });
 
-
+app.options('/file-upload', cors());
 app.post('/file-upload', function (req, res) {
+  
   if (!checkToken(req)) {
             return res.status(401).send({errorMessage: "Invalid token"})
     }
