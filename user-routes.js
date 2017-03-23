@@ -228,7 +228,7 @@ app.post('/updateuser', function(req, res) {
             'ddress fax slug cuid dateAdded dateUpdated', )
         .then(function(user) {            
             var hash = bcrypt.hashSync(req.body.password, 10);
-            if (hash !== req.body.password) {
+            if (hash !== user.password) {
                 req.body.password = hash;
             }
             
