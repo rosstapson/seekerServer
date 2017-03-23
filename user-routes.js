@@ -226,10 +226,9 @@ app.post('/updateuser', function(req, res) {
                 username: req.body.username
             }, 'username email password accessLevel companyName telephone contactPerson mobile a' +
             'ddress fax slug cuid dateAdded dateUpdated', )
-        .then(function(user) {            
-            var hash = bcrypt.hashSync(req.body.password, 10);
-            if (hash !== user.password) {
-                req.body.password = hash;
+        .then(function(user) {          
+            if (req.body.password !== user.password) {
+                req.body.password = bcrypt.hashSync(req.body.password, 10);
             }
             
             user
