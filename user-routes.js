@@ -1,3 +1,4 @@
+
 import express from 'express';
 import _ from 'lodash';
 import config from './config';
@@ -303,5 +304,5 @@ app.post('/token', function(req, res) {
 
     res
         .status(201)
-        .send({ decoded: decoded });
+        .send({ decoded: true });
 });
