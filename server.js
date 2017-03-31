@@ -87,10 +87,3 @@ https.createServer(httpsOptions, app).listen(serverConfig.port, function() {
     console.log('Express HTTPS server listening on port ' + serverConfig.port);
     console.log("HTTPS branch");
 });
-
-// http
-//     .createServer(app)
-//     .listen(port, function(err) {
-//         console.log('ZOMG! listening in http://localhost:' + port);
-//         console.log('Admin branch.');
-//     });

@@ -54,8 +54,7 @@ var endLoadInputs = '";   }</script>';
 
 app.get('/api/resetuserpassword/:id_token', function (req, res) {
     var id_token = req.params.id_token;
-    if (!id_token) {
-        console.log("invalid token");
+    if (!id_token) {        
         return res
             .status(404)
             .send("Invalid token");
@@ -88,8 +87,7 @@ app.get('/api/resetuserpassword/:id_token', function (req, res) {
 
 app.post('/api/resetuserpassword/:id_token', function (req, res) {
     var id_token = req.params.id_token;
-    if (!id_token) {
-        console.log("invalid token");
+    if (!id_token) {        
         return res
             .status(404)
             .send("Invalid token");
@@ -135,8 +133,7 @@ app.post('/api/resetuserpassword/:id_token', function (req, res) {
 
 app.get('/api/confirm/:id_token', function (req, res) {
     var id_token = req.params.id_token;
-    if (!id_token) {
-        console.log("invalid token");
+    if (!id_token) {        
         return res
             .status(404)
             .send("Invalid token");

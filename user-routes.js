@@ -129,11 +129,11 @@ app.post('/users', function(req, res) {
 
     var user = addUser(req, res).then(function(user) {
             var id_token = createToken(user.username);
-            console.log(id_token);
+            console.log("user added: " + user.username);
             mailToken(user.email, id_token);
             return res
                 .status(201)
-                .send({ username: user.userName, id_token: id_token });
+                .send({ username: user.username, id_token: id_token });
         })
         .catch(function(err) {
             if (err.message == "User validation failed") {
@@ -283,20 +283,17 @@ app.post('/sessions/create', function(req, res) {
 
 app.post('/token', function(req, res) {
     var decoded = false;
-    console.log("here");
-    console.log("token secret: " + config.secret);
-    console.log("req.body: " + req.body.id_token);
+    
     if (!req.body) {
-        console.log("no token");
+        console.log("verify: no token");
         return res
             .status(400)
             .send({ errorMessage: "No token" });
     }
     try {
-        console.log("here. ");
         decoded = jwt.verify(req.body.id_token, config.secret);
     } catch (err) {
-        console.log("Error: " + err.message);
+        console.log("zomg: " + err.message);
         return res
             .status(400)
             .send({ errorMessage: "Invalid token" });
