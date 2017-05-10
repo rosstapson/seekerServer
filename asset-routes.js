@@ -215,10 +215,16 @@ app.post('/updateasset', function (req, res) {
             .send({errorMessage: "Asset not found"});
         }
         user.set("dateUpdated", Date.now());
-        user.save();
-        res
-          .status(200)
-          .send({assets: user.assets});
+        user.save(function (err, product, numAffected) {
+          if (err){
+            console.log(err.message);
+            res.status(418).send({message: err.message})
+          }
+          else {
+            res.status(200).send({assets: user.assets});
+          }
+        });
+        
       }
     }, function (err) {
       return res
