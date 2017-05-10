@@ -80,9 +80,9 @@ app.post('/file-upload', function (req, res) {
     if(fieldName === 'username') {username = value;}
     if(fieldName === 'dnaCode') {dnaCode = value;}
   });
-  req.busboy.on('finish', function() {
-    console.log(tempName + ',' + username);
+  req.busboy.on('finish', function() {    
     if (tempName == '' || username == '') {
+      console.log('Error: filename,username = ' + tempName + ',' + username);
       return res.status(500).send({errorMessage: 'Unable to extract user information for upload'});      
     }
     var dir = './user_images/' + username;
@@ -169,10 +169,15 @@ app.post('/addasset', function (req, res) {
           .assets
           .push(req.body.asset);
         //user.dateUpdated = Date.now;
-        user.save();
-        res
-          .status(200)
-          .send({assets: user.assets});
+        user.save(function (err, product, numAffected) {
+          if (err){
+            res.status(418).send({message: err.message})
+          }
+          else {
+            res.status(200).send({assets: user.assets});
+          }
+        });
+        
       }
     }, function (err) {
       return res
