@@ -237,7 +237,7 @@ app.post('/updateuser', function(req, res) {
                 .then(function() {
                     res
                         .status(201)
-                        .send({ message: "Update successful" });
+                        .send({ message: "Update successful", user: user });
                 });
 
         }, function(err) {
