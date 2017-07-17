@@ -5,6 +5,7 @@ import busboy from 'connect-busboy';
 import cuid from 'cuid';
 import {checkToken} from './auth';
 import cors from 'cors';
+//import clam from 'clamscan';
 
 var app = module.exports = express.Router();
 app.use(busboy());
@@ -13,11 +14,7 @@ app.post('/deleteimage', function(req, res) {
   if (!checkToken(req)) {
             return res.status(401).send({errorMessage: "Invalid token"})
     }
-  // console.log("deleting image " + req.body.url 
-  // + " for asset " 
-  // + req.body.dnaCode 
-  // + " for user "
-  // + req.body.username);  
+  
   try {
    fs.unlinkSync(__dirname + '/user_images/' + req.body.url);
   }
@@ -94,8 +91,23 @@ app.post('/file-upload', function (req, res) {
     var newPath = __dirname + '/user_images/' + username + '/' + newName;
     console.log('newPath: ' + newPath);
     if (!fs.existsSync(oldPath)) {
-	console.log("feck.");
+	    console.log("feck.");
     }
+    // virus scan 
+    var clam = require('clamscan')({
+      remove_infected: true
+    });
+    clam.is_infected(oldPath, function(err, file, is_infected) {
+      if(err) {
+        console.log(err);
+        return false;
+    } 
+    if(is_infected) {
+        return res.status(500).send({errorMessage: 'Virus detected in uploaded file.'});      
+    } else {
+        console.log("File scanned, no virus detected.");
+    }
+    });
     fs.renameSync(oldPath, newPath);
     console.log('dnaCode: ' + dnaCode);
     updateAssetImageUrl(username, dnaCode, newName);
