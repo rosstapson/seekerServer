@@ -94,19 +94,22 @@ app.post('/file-upload', function (req, res) {
 	    console.log("feck.");
     }
     // virus scan 
-    var clam = require('clamscan')({
-      remove_infected: true
-    });
-    clam.is_infected(oldPath, function(err, file, is_infected) {
-      if(err) {
-        return res.status(500).send({errorMessage: 'Error occurred during virus scan.'});
-    } 
-    if(is_infected) {
-        return res.status(500).send({errorMessage: 'Virus detected in uploaded file.'});      
-    } else {
-        console.log("File scanned, no virus detected.");
+    var clam = require('clam-engine');
+
+    clam.createEngine(function (err, engine) {
+    if (err) {
+      return console.log('Error', err);
     }
-    });
+    engine.scanFile(oldPath, function (err, virus) {
+    if (err) {
+      return console.log('Error', err);
+    }
+    if (virus) {
+      return console.log('Virus', virus);
+    }
+    console.log('Clean');
+  });
+});
     fs.renameSync(oldPath, newPath);
     console.log('dnaCode: ' + dnaCode);
     updateAssetImageUrl(username, dnaCode, newName);
