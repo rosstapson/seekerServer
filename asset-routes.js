@@ -54,7 +54,7 @@ app.post('/deleteimage', function(req, res) {
   
   
 });
-console.log(" outside scope");
+var outsideEngine = null;
 app.options('/file-upload', cors());
 app.post('/file-upload', function (req, res) {
   if (!checkToken(req)) {
@@ -96,6 +96,9 @@ app.post('/file-upload', function (req, res) {
     // virus scan 
     var clam = require('clam-engine');
     console.log("creating clam engine");
+    if (!outsideEngine || outsideEngine == null) {
+      console.log("outside engine is null;");
+    }
     clam.createEngine(function (err, engine) {
     if (err) {
       return console.log('Error', err);
