@@ -99,10 +99,14 @@ app.post('/file-upload', function (req, res) {
     if (!outsideEngine || outsideEngine == null) {
       console.log("outside engine is null;");
     }
+    else {
+      console.log("found outside engine!");
+    }
     clam.createEngine(function (err, engine) {
     if (err) {
       return console.log('Error', err);
     }
+    outsideEngine = engine;
     console.log("about to scan");
     engine.scanFile(oldPath, function (err, virus) {
     if (err) {
