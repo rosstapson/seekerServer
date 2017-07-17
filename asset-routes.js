@@ -54,7 +54,7 @@ app.post('/deleteimage', function(req, res) {
   
   
 });
-
+console.log(" outside scope");
 app.options('/file-upload', cors());
 app.post('/file-upload', function (req, res) {
   if (!checkToken(req)) {
