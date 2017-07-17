@@ -111,19 +111,23 @@ app.post('/file-upload', function (req, res) {
     
     console.log("about to scan");
     outsideEngine.scanFile(oldPath, function (err, virus) {
-    if (err) {
-      return console.log('Error', err);
-    }
-    if (virus) {
-      return console.log('Virus', virus);
-    }
-    else {
-      fs.renameSync(oldPath, newPath);
-    console.log('dnaCode: ' + dnaCode);
-    updateAssetImageUrl(username, dnaCode, newName);
-    res.status(201).send({imageUrl: username + '/' + newName})
-    }
-    console.log('Clean');
+      if (err) {
+        console.log('Error', err);
+        return res.status(500).send({errorMessage: err});
+      }
+      if (virus) {
+        console.log('Virus', virus);
+        fs.unlinkSync(oldPath);
+        return res.status(500).send({errorMessage: "Virus found in file"});
+      }
+      else {
+        console.log('Clean');
+        fs.renameSync(oldPath, newPath);
+        console.log('dnaCode: ' + dnaCode);
+        updateAssetImageUrl(username, dnaCode, newName);
+        res.status(201).send({imageUrl: username + '/' + newName});
+      }
+      
   });
 });
     
@@ -147,7 +151,7 @@ app.post('/file-upload', function (req, res) {
     
   }
 
-});
+
 function renameFile(fileName) {
   var arr = fileName.split(".");
   return cuid() + '.' + arr[arr.length - 1]; //last array element presumably '.gif' or whatnot.
