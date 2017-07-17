@@ -99,8 +99,7 @@ app.post('/file-upload', function (req, res) {
     });
     clam.is_infected(oldPath, function(err, file, is_infected) {
       if(err) {
-        console.log(err);
-        return false;
+        return res.status(500).send({errorMessage: 'Error occurred during virus scan.'});
     } 
     if(is_infected) {
         return res.status(500).send({errorMessage: 'Virus detected in uploaded file.'});      
