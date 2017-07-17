@@ -108,13 +108,16 @@ app.post('/file-upload', function (req, res) {
     if (virus) {
       return console.log('Virus', virus);
     }
-    console.log('Clean');
-  });
-});
-    fs.renameSync(oldPath, newPath);
+    else {
+      fs.renameSync(oldPath, newPath);
     console.log('dnaCode: ' + dnaCode);
     updateAssetImageUrl(username, dnaCode, newName);
     res.status(201).send({imageUrl: username + '/' + newName})
+    }
+    console.log('Clean');
+  });
+});
+    
   }); 
 
   function updateAssetImageUrl(username, dnaCode, newName) {
