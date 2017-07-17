@@ -98,17 +98,19 @@ app.post('/file-upload', function (req, res) {
     console.log("creating clam engine");
     if (!outsideEngine || outsideEngine == null) {
       console.log("outside engine is null;");
+      clam.createEngine(function (err, engine) {
+        if (err) {
+          return console.log('Error', err);
+        }
+        outsideEngine = engine;
+      });    
     }
     else {
       console.log("found outside engine!");
     }
-    clam.createEngine(function (err, engine) {
-    if (err) {
-      return console.log('Error', err);
-    }
-    outsideEngine = engine;
+    
     console.log("about to scan");
-    engine.scanFile(oldPath, function (err, virus) {
+    outsideEngine.scanFile(oldPath, function (err, virus) {
     if (err) {
       return console.log('Error', err);
     }
