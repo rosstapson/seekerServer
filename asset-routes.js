@@ -27,18 +27,14 @@ app.post('/deleteimage', function(req, res) {
   //establish db ref to file url
   var user = User.findOne({username: req.body.username})
   .then(function(user) {
-    assetInQuestion = user.assets.find((value) => {
-      //console.log("asset:" + value.dnaCode);
+    assetInQuestion = user.assets.find((value) => {      
       return value.dnaCode === req.body.dnaCode;
     });
-    tempUrls = assetInQuestion.imageUrls.filter((value) => {
-      // console.log("here: " + value + " - compare: " + req.body.url);
-      // console.log( value !== req.body.url);
+    tempUrls = assetInQuestion.imageUrls.filter((value) => {      
       return value !== req.body.url;
     });
     assetInQuestion.imageUrls = tempUrls;
-    assetInQuestion.set("dateUpdated", Date.now());    
-    //console.log(user.assets.imageUrls);
+    assetInQuestion.set("dateUpdated", Date.now());   
     user.save();
     res.status(201).send({message: "Image deleted"});
    
@@ -89,41 +85,35 @@ app.post('/file-upload', function (req, res) {
     var newName = renameFile(tempName);
     var oldPath = __dirname + '/user_images/' + tempName;
     var newPath = __dirname + '/user_images/' + username + '/' + newName;
-    console.log('newPath: ' + newPath);
     if (!fs.existsSync(oldPath)) {
-	    console.log("feck.");
+	    console.log("feck. inexplicable error, possibly non-fatal");
     }
     // virus scan 
     var clam = require('clam-engine');
-    console.log("creating clam engine");
+    
     if (!outsideEngine || outsideEngine == null) {
-      console.log("outside engine is null;");
+      console.log("outside engine is null; creating clam engine");
       clam.createEngine(function (err, engine) {
         if (err) {
           return console.log('Error', err);
         }
         outsideEngine = engine;
       });    
-    }
-    else {
-      console.log("found outside engine!");
-    }
+    }    
     
-    console.log("about to scan");
     outsideEngine.scanFile(oldPath, function (err, virus) {
       if (err) {
-        console.log('Error', err);
+        console.log('Virus scan error: ', err);
         return res.status(500).send({errorMessage: err});
       }
       if (virus) {
-        console.log('Virus', virus);
+        console.log('Virus found! Deleting file ' + oldPath, virus);
         fs.unlinkSync(oldPath);
         return res.status(500).send({errorMessage: "Virus found in file"});
       }
       else {
-        console.log('Clean');
-        fs.renameSync(oldPath, newPath);
-        console.log('dnaCode: ' + dnaCode);
+        // scan successful, file clean
+        fs.renameSync(oldPath, newPath);        
         updateAssetImageUrl(username, dnaCode, newName);
         res.status(201).send({imageUrl: username + '/' + newName});
       }
