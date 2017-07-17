@@ -95,11 +95,12 @@ app.post('/file-upload', function (req, res) {
     }
     // virus scan 
     var clam = require('clam-engine');
-
+    console.log("creating clam engine");
     clam.createEngine(function (err, engine) {
     if (err) {
       return console.log('Error', err);
     }
+    console.log("about to scan");
     engine.scanFile(oldPath, function (err, virus) {
     if (err) {
       return console.log('Error', err);
