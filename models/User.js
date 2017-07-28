@@ -146,6 +146,14 @@ const userSchema = new Schema({
             type: String,
             required: false
         },
+        pendingTransfer: {
+            type: 'Boolean',
+            default: false
+        },
+        pendingTransferToUser: {
+            type: String,
+            required: false
+        },
         description: {
             type: String,
             required: false

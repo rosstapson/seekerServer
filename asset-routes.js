@@ -284,3 +284,17 @@ app.post('/deleteasset', function (req, res) {
         .send({errorMessage: err.message});
     })
 });
+
+app.post('/initiateTransferAsset', function (req, res) {
+  if (!checkToken(req)) {
+            return res.status(401).send({errorMessage: "Invalid token"})
+    }
+    console.log("initiating transfer");
+});
+
+app.post('/completeTransferAsset', function (req, res) {
+  if (!checkToken(req)) {
+            return res.status(401).send({errorMessage: "Invalid token"})
+    }
+    console.log("completing transfer");
+});
