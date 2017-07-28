@@ -352,6 +352,7 @@ app.post('/initiateTransferAsset', function (req, res) {
             res.status(418).send({message: err.message})
           }
           else {
+              console.log("user saved");
             sendTransferEmail(req.body.username, req.body.asset.pendingTransferToUser, tempAsset);
             res.status(200).send({assets: user.assets});
           }
