@@ -322,6 +322,13 @@ app.post('/initiateTransferAsset', function (req, res) {
           .send({errorMessage: "User not found"});
       } else {
         var found = false;
+        console.log("found seller");
+        var buyerUser = User.findOne({username: req.body.asset.pendingTransferToUser)
+            .then(function (buyerUser) {
+                console.log("found buyer");
+            }).catch(function(err){
+                throw err;
+            })
         for (var i = 0; i < user.assets.length; i++) {
           if (user.assets[i].dnaCode === req.body.asset.dnaCode) {
             //if (user.assets[i]._id === req.body.asset._id) {
