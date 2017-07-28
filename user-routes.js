@@ -313,6 +313,9 @@ app.post('/initiateTransferAsset', function (req, res) {
     }
     console.log("initiating transfer");
     var tempAsset = null;
+    var buyerEmail = '';
+    var sellerEmail = '';
+
     var user = User
     .findOne({username: req.body.username})
     .then(function (user) {
@@ -322,10 +325,12 @@ app.post('/initiateTransferAsset', function (req, res) {
           .send({errorMessage: "User not found"});
       } else {
         var found = false;
+        sellerEmail = user.email;
         console.log("found seller");
         var buyerUser = User.findOne({username: req.body.asset.pendingTransferToUser})
             .then(function (buyerUser) {
                 console.log("found buyer");
+                buyerEmail = buyerUser.email;
             }).catch(function(err){
                 throw err;
             })
@@ -353,7 +358,7 @@ app.post('/initiateTransferAsset', function (req, res) {
           }
           else {
               console.log("user saved");
-            sendTransferEmail(req.body.username, req.body.asset.pendingTransferToUser, tempAsset);
+            sendTransferEmail(sellerEmail, buyerEmail, tempAsset);
             res.status(200).send({assets: user.assets});
           }
         });
@@ -376,10 +381,9 @@ app.post('/completeTransferAsset', function (req, res) {
     // save both users
 });
 
-function sendTransferEmail(seller, buyer, asset) { // usernames - need to find emails
+function sendTransferEmail(sellerEmail, buyerEmail, asset) { // usernames - need to find emails
     console.log("send transfer mail");
-    var sellerEmail = getEmailForUsername(seller);
-    var buyerEmail = getEmailForUsername(buyer);
+    
     var id_token = createBuyerToken(buyer);
     var sellerMessage = "<b>You have received this message because you have initiated the transfer " +
         " of asset with DNA code <i>" + asset.dnaCode + "</i> to user " +
@@ -410,17 +414,4 @@ function createBuyerToken(username) {
         username: username
     }, config.secret);
 }
-function getEmailForUsername(username) {
-    console.log("getEmailForUsername: " + username);
-    var user = User.findOne({
-                username: username
-            }, 'username email password accessLevel companyName telephone contactPerson mobile a' +
-            'ddress fax slug cuid dateAdded dateUpdated', )
-        .then(function(user) {
-            console.log("found email: " + user.email);
-            return user.email;
-            
-        }, function(err) {
-            console.log(err);            
-        });
-}
+
