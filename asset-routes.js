@@ -1,3 +1,6 @@
+// NB! assetTransfer is located in user-routes, so as to
+// utilise nodemailer and transporter instantiated there.
+
 import express from 'express';
 import User from './models/User';
 import fs from 'fs';
@@ -283,18 +286,4 @@ app.post('/deleteasset', function (req, res) {
         .status(400)
         .send({errorMessage: err.message});
     })
-});
-
-app.post('/initiateTransferAsset', function (req, res) {
-  if (!checkToken(req)) {
-            return res.status(401).send({errorMessage: "Invalid token"})
-    }
-    console.log("initiating transfer");
-});
-
-app.post('/completeTransferAsset', function (req, res) {
-  if (!checkToken(req)) {
-            return res.status(401).send({errorMessage: "Invalid token"})
-    }
-    console.log("completing transfer");
 });

@@ -303,3 +303,113 @@ app.post('/token', function(req, res) {
         .status(201)
         .send({ decoded: true });
 });
+
+
+app.post('/initiateTransferAsset', function (req, res) {
+  // send email with link and token
+ 
+  if (!checkToken(req)) {
+            return res.status(401).send({errorMessage: "Invalid token"})
+    }
+    console.log("initiating transfer");
+    var tempAsset = null;
+    var user = User
+    .findOne({username: req.body.username})
+    .then(function (user) {
+      if (!user) {
+        res
+          .status(400)
+          .send({errorMessage: "User not found"});
+      } else {
+        var found = false;
+        for (var i = 0; i < user.assets.length; i++) {
+          if (user.assets[i].dnaCode === req.body.asset.dnaCode) {
+            //if (user.assets[i]._id === req.body.asset._id) {
+            user.assets[i].pendingTransferToUser = req.body.asset.pendingTransferToUser;
+            user.assets[i].pendingTransfer = true;
+            user.assets[i].dateUpdated = new Date();
+            tempAsset = user.assets[i];
+            found = true;
+            break;
+          }
+        }
+        if (!found) {
+          return res
+            .status(400)
+            .send({errorMessage: "Asset not found"});
+        }
+        user.set("dateUpdated", Date.now());
+        user.save(function (err, product, numAffected) {
+          if (err){
+            console.log(err.message);
+            res.status(418).send({message: err.message})
+          }
+          else {
+            sendTransferEmail(req.body.username, req.body.asset.pendingTransferToUser, tempAsset);
+            res.status(200).send({assets: user.assets});
+          }
+        });
+        
+      }
+    }, function (err) {
+      return res
+        .status(400)
+        .send({errorMessage: err.message});
+    })
+});
+
+app.post('/completeTransferAsset', function (req, res) {
+  if (!checkToken(req)) {
+            return res.status(401).send({errorMessage: "Invalid token"})
+    }
+    console.log("placeholder - complete transfer");
+    // find seller user, find buyer user
+    // find asset in seller, add it to buyer.assets, delete it from seller
+    // save both users
+});
+
+function sendTransferEmail(seller, buyer, asset) { // usernames - need to find emails
+    console.log("send transfer mail");
+    var sellerEmail = getEmailForUsername(seller);
+    var buyerEmail = getEmailForUsername(buyer);
+    var id_token = createBuyerToken(buyer);
+    var sellerMessage = "<b>You have received this message because you have initiated the transfer " +
+        " of asset with DNA code <i>" + asset.dnaCode + "</i> to user " +
+        buyer + ". If you did not do this, or think that this may be an error</b>";
+    var buyerMessage = "You have received this message because user <i> " + seller + " </i> has initiated the transfer to you of " + 
+        "an asset with DNA code <i>" + asset.dnaCode + "</i>. If you think that this may be an error, please contact...?";
+    sendMailMessage(sellerEmail, "Asset Transfer", sellerMessage);
+    sendMailMessage(buyerEmail, "Asset Transfer", buyerMessage);
+    // send mail to seekerDNA - what's the address?? :)
+    
+}
+function sendMailMessage(email, subject, message) {
+    var mailOptions = {
+        from: '"SeekerDNA" <dnanoreply@seekerdna.co.za>',
+        to: email,
+        subject: subject,
+        html: message
+    };
+    transporter.sendMail(mailOptions, function(error, info) {
+        if (error) {
+            return console.log(error);
+        }
+    });
+}
+function createBuyerToken(username) {    
+    return jwt.sign({
+        username: username
+    }, config.secret);
+}
+function getEmailForUsername(username) {
+    var user = User.findOne({
+                username: username
+            }, 'username email password accessLevel companyName telephone contactPerson mobile a' +
+            'ddress fax slug cuid dateAdded dateUpdated', )
+        .then(function(user) {
+            return user.email;
+            
+        }, function(err) {
+            console.log(err);            
+        });
+}
