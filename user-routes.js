@@ -410,11 +410,13 @@ function createBuyerToken(username) {
     }, config.secret);
 }
 function getEmailForUsername(username) {
+    console.log("getEmailForUsername: " + username);
     var user = User.findOne({
                 username: username
             }, 'username email password accessLevel companyName telephone contactPerson mobile a' +
             'ddress fax slug cuid dateAdded dateUpdated', )
         .then(function(user) {
+            console.log("found email: " + user.email);
             return user.email;
             
         }, function(err) {
