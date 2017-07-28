@@ -388,7 +388,7 @@ function sendTransferEmail(buyer, sellerEmail, buyerEmail, asset) { // usernames
     var sellerMessage = "<b>You have received this message because you have initiated the transfer " +
         " of asset with DNA code <i>" + asset.dnaCode + "</i> to user " +
         buyer + ". If you did not do this, or think that this may be an error</b>";
-    var buyerMessage = "You have received this message because user <i> " + seller + " </i> has initiated the transfer to you of " + 
+    var buyerMessage = "You have received this message because user <i> " + sellerEmail + " </i> has initiated the transfer to you of " + 
         "an asset with DNA code <i>" + asset.dnaCode + "</i>. If you think that this may be an error, please contact...?";
     sendMailMessage(sellerEmail, "Asset Transfer", sellerMessage);
     sendMailMessage(buyerEmail, "Asset Transfer", buyerMessage);
