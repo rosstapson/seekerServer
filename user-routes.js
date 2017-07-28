@@ -358,7 +358,7 @@ app.post('/initiateTransferAsset', function (req, res) {
           }
           else {
               console.log("user saved");
-            sendTransferEmail(sellerEmail, buyerEmail, tempAsset);
+            sendTransferEmail(req.body.username, sellerEmail, buyerEmail, tempAsset);
             res.status(200).send({assets: user.assets});
           }
         });
@@ -381,7 +381,7 @@ app.post('/completeTransferAsset', function (req, res) {
     // save both users
 });
 
-function sendTransferEmail(sellerEmail, buyerEmail, asset) { // usernames - need to find emails
+function sendTransferEmail(buyer, sellerEmail, buyerEmail, asset) { // usernames - need to find emails
     console.log("send transfer mail");
     
     var id_token = createBuyerToken(buyer);
