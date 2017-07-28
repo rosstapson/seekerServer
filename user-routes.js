@@ -392,6 +392,7 @@ function sendTransferEmail(seller, buyer, asset) { // usernames - need to find e
     
 }
 function sendMailMessage(email, subject, message) {
+    console.log("sendMailMessage email: " + email);
     var mailOptions = {
         from: '"SeekerDNA" <dnanoreply@seekerdna.co.za>',
         to: email,
