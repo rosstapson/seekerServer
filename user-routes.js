@@ -323,7 +323,7 @@ app.post('/initiateTransferAsset', function (req, res) {
       } else {
         var found = false;
         console.log("found seller");
-        var buyerUser = User.findOne({username: req.body.asset.pendingTransferToUser)
+        var buyerUser = User.findOne({username: req.body.asset.pendingTransferToUser})
             .then(function (buyerUser) {
                 console.log("found buyer");
             }).catch(function(err){
