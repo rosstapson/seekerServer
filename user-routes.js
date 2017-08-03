@@ -11,6 +11,7 @@ import slug from 'limax';
 import util from 'util';
 import bcrypt from 'bcrypt';
 import { checkToken } from './auth';
+import fs from 'fs';
 
 var app = module.exports = express.Router();
 var transporter = nodemailer.createTransport({
@@ -435,6 +436,7 @@ app.get('/api/transferAsset', function (req, res) {
 // htmlz.
 
 app.post('/api/transferAsset', function (req, res) {
+    console.log("post transferAsset");
     var id_token = req.body.id_token; // req.param????
     if (!id_token) {        
         return res
@@ -454,21 +456,50 @@ app.post('/api/transferAsset', function (req, res) {
     }
 
     var user = User
-        .findOne({username: decoded.username})
+        .findOne({username: req.body.buyerName})
         .then(function (user) {
-            // FIND SELLER FROM req.query.sellerUser (username)
-            // FIND ASSET WITHIN SELLUSER
-            // COPY ASSET TO user
-            // COPY IMAGES TO user image FOLDER
-            // CHANGE STATUS ON asset ON sellerUser to 'Transferred' AND SET DATE
-            // SET STATUS ON buyerUser's ASSET TO Active
-            console.log("transfer asset: user found: " + user.username);
+            var seller = User.findOne({username: req.body.sellerName}).then(function (user){
+                console.log("seller found: " + seller.username);
+                var dir = './user_images/' + user.username;
+                if (!fs.existsSync(dir)){
+                    fs.mkdirSync(dir);
+                }
+                var asset = seller.assets.find(function(tempAsset) {                    
+                    return tempAsset.dnaCode === req.body.dnaCode;                    
+                });
+                
+                if (!asset) {
+                    return res.status(404).send("Asset not found!");
+                }
+                var newAsset = asset.Assign({}, asset);
+                newAsset.status = "Active";
+                asset.status = "Transferred";
+                asset.set("dateTransferred", Date.now());
+                newAsset.set("dateTransferred", Date.now());
+                asset.pendingTransfer = false;
+                newAsset.pendingTransfer = false;
+                asset.set("transferredToUser", user.username);
+                newAsset.pendingTransferToUser = '';
+                
+                asset.imageUrls.forEach(function(url) {
+                    //simply replace seller foldername with buyer
+                    url = url.replace(seller.username, user.username);
+                    //copy the physical file
+                    var fileName = __dirname + '/user_images/' + url;
+                    fs.renameSync(oldPath, newPath);
+                })
+                user.assets.push(asset);
+                user.save();
+                seller.save();
+                return res.status(201).send({message: "Asset transferred"});
+                
+            })           
 
         })
         .catch(function (err) {
             res
                 .status(404)
-                .send("user not found");
+                .send(err.message);
         });
 });
 
