@@ -392,7 +392,7 @@ app.post('/initiateTransferAsset', function (req, res) {
 
 //display confirm transfer asset page
 app.get('/api/transferAsset', function (req, res) {
-    var id_token = req.query.id_token;
+    var id_token = req.body.id_token;
     if (!id_token) {        
         return res
             .status(404)
@@ -401,6 +401,7 @@ app.get('/api/transferAsset', function (req, res) {
     var decoded = null;
     try {
         decoded = jwt.verify(id_token, config.secret);
+        
         // decoded = jwt.verify(id_token, config.secret, { ignoreExpiration: true });
         // //just for debuggery
     } catch (err) {
@@ -418,14 +419,15 @@ app.get('/api/transferAsset', function (req, res) {
                 .send(htmlHeader + htmlBodyTagAndLogo + // righty. this is a form with a post, so, hidden inputs, not url params.
                     '<div style="text-align: center; font-family: roboto"><form id="myForm" method="post">' +
                     '<input type="hidden" name="id_token" value="' + id_token + '">' +
-                    '<input type="hidden" name="sellerName" value="' + req.query.sellerName + '">' +
-                    '<input type="hidden" name="dnaCode" value="' + req.query.dnaCode + '">' +
+                    '<input type="hidden" name="sellerName" value="' + req.body.sellerName + '">' +
+                    '<input type="hidden" name="buyerName" value="' + user.username + '">' + 
+                    '<input type="hidden" name="dnaCode" value="' + req.body.dnaCode + '">' +
                     '<div ><label style="font-size: 20px; font-weight: 700; margin-bottom: 2px; ' +
                     'color: #757575;" >Click "Accept" to confirm transfer of asset <b>' +
-                    req.query.dnaCode +       
+                    req.body.dnaCode +       
 
                     '</b> from user <b>' +
-                    req.query.sellerName +       
+                    req.body.sellerName +       
 
                     '</b> to user <b>' +
                     user.username +
@@ -445,7 +447,7 @@ app.get('/api/transferAsset', function (req, res) {
 // htmlz.
 
 app.post('/api/transferAsset', function (req, res) {
-    var id_token = req.query.id_token;
+    var id_token = req.body.id_token; // req.param????
     if (!id_token) {        
         return res
             .status(404)
@@ -488,8 +490,8 @@ function sendTransferEmail(seller, buyer, asset) { // usernames - need to find e
     
     var id_token = createBuyerToken(buyer);
     var sellerMessage = "<b>You have received this message because you have initiated the transfer " +
-        " of asset with DNA code <i>" + asset.dnaCode + "</i> to user " +
-        buyer.username + ". If you did not do this, or think that this may be an error please contact us at DNA@seekerdna.co.za</b>";
+        " of asset with DNA code <i>" + asset.dnaCode + "</i> to user <i>" +
+        buyer.username + "</i>. If you did not do this, or think that this may be an error please contact us at DNA@seekerdna.co.za</b>";
     var buyerMessage = "<b>You have received this message because user <i> " + seller.username + " </i> has initiated the transfer to you of " + 
         "an asset with DNA code <i>" + asset.dnaCode + "</i>. " + 
         "Please click <a href='" +
