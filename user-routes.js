@@ -468,7 +468,7 @@ app.post('/api/transferAsset', function (req, res) {
                 var asset = seller.assets.find(function(tempAsset) {                    
                     return tempAsset.dnaCode === req.body.dnaCode;                    
                 });
-                
+                console.log("asset found: " + asset.dnaCode);
                 if (!asset) {
                     return res.status(404).send("Asset not found!");
                 }
