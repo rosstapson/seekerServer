@@ -337,9 +337,14 @@ app.post('/initiateTransferAsset', function (req, res) {
       } else {
         var found = false;
         sellerEmail = user.email;
-        console.log("found seller");
+        console.log("found seller" + user.email);
         buyerUser = User.findOne({username: req.body.asset.pendingTransferToUser})
             .then(function (buyerUser) {
+                if (!buyerUser) {
+                    return res
+                    .status(400)
+                    .send({errorMessage: "Buyer not found"});
+                }
                 console.log("found buyer" + buyerUser.email);
                 buyerEmail = buyerUser.email;
             }).catch(function(err){
