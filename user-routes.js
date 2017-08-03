@@ -326,7 +326,7 @@ app.post('/initiateTransferAsset', function (req, res) {
     var tempAsset = null;
     var buyerEmail = '';
     var sellerEmail = '';
-
+    var buyerUser = null;
     var user = User
     .findOne({username: req.body.username})
     .then(function (user) {
@@ -338,7 +338,7 @@ app.post('/initiateTransferAsset', function (req, res) {
         var found = false;
         sellerEmail = user.email;
         console.log("found seller");
-        var buyerUser = User.findOne({username: req.body.asset.pendingTransferToUser})
+        buyerUser = User.findOne({username: req.body.asset.pendingTransferToUser})
             .then(function (buyerUser) {
                 console.log("found buyer");
                 buyerEmail = buyerUser.email;
@@ -350,6 +350,7 @@ app.post('/initiateTransferAsset', function (req, res) {
             //if (user.assets[i]._id === req.body.asset._id) {
             user.assets[i].pendingTransferToUser = req.body.asset.pendingTransferToUser;
             user.assets[i].pendingTransfer = true;
+            user.assets[i].status = "Pending Transfer";
             user.assets[i].dateUpdated = new Date();
             tempAsset = user.assets[i];
             found = true;
@@ -487,7 +488,7 @@ function sendTransferEmail(seller, buyer, asset) { // usernames - need to find e
     var id_token = createBuyerToken(buyer);
     var sellerMessage = "<b>You have received this message because you have initiated the transfer " +
         " of asset with DNA code <i>" + asset.dnaCode + "</i> to user " +
-        buyer.username + ". If you did not do this, or think that this may be an error</b>";
+        buyer.username + ". If you did not do this, or think that this may be an error please contact us at DNA@seekerdna.co.za</b>";
     var buyerMessage = "<b>You have received this message because user <i> " + seller.username + " </i> has initiated the transfer to you of " + 
         "an asset with DNA code <i>" + asset.dnaCode + "</i>. " + 
         "Please go to <a href='" +
@@ -499,6 +500,7 @@ function sendTransferEmail(seller, buyer, asset) { // usernames - need to find e
         seller.username +
         "'></a>" +
         "<br>If you think that this may be an error, please contact...?<b>";
+        console.log(buyermessage);
     sendMailMessage(seller.email, "Asset Transfer", sellerMessage);
     sendMailMessage(buyer.email, "Asset Transfer", buyerMessage);
     // send mail to seekerDNA - what's the address?? :)
