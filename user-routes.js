@@ -25,9 +25,9 @@ var transporter = nodemailer.createTransport({
 });
 
 // these vars for transferAsset
-var loadInputs = '<script>function loadInputs() {  document.getElementById("myForm").action = "ht' +
-        'tps://seekerdnasecure.co.za:3002/api/transferAsset';
-var endLoadInputs = '";   }</script>';
+// var loadInputs = '<script>function loadInputs() {  document.getElementById("myForm").action = "ht' +
+//         'tps://seekerdnasecure.co.za:3002/api/transferAsset';
+// var endLoadInputs = '";   }</script>';
 var htmlBodyTagAndLogo = '<body><div style=" margin: auto;"><img src="https://seekerdnasecure.co.za:3002/l' +
         'ogo.png" style="height: 200px; display: block; margin: auto;" alt="logo"/></div>';
 var htmlHeader = "<!DOCTYPE html><html lang=\"en\"><head><meta charset=\"utf-8\"><meta name=\"\"vi" +
@@ -415,30 +415,24 @@ app.get('/api/transferAsset', function (req, res) {
         .then(function (user) {
             res
                 .status(200)
-                .send(htmlHeader + htmlBodyTagAndLogo + 
+                .send(htmlHeader + htmlBodyTagAndLogo + // righty. this is a form with a post, so, hidden inputs, not url params.
                     '<div style="text-align: center; font-family: roboto"><form id="myForm" method="post">' +
+                    '<input type="hidden" name="id_token" value="' + id_token + '">' +
+                    '<input type="hidden" name="sellerName" value="' + req.query.sellerName + '">' +
+                    '<input type="hidden" name="dnaCode" value="' + req.query.dnaCode + '">' +
                     '<div ><label style="font-size: 20px; font-weight: 700; margin-bottom: 2px; ' +
-                    'color: #757575;" >Please confirm transfer asset ' +
+                    'color: #757575;" >Click "Accept" to confirm transfer of asset <b>' +
                     req.query.dnaCode +       
 
-                    ' from user ' +
+                    '</b> from user <b>' +
                     req.query.sellerName +       
 
-                    'to user ' +
-                    decoded.username +
+                    '</b> to user <b>' +
+                    user.username +
 
-                    '</label></div><input type="submit" style="display: inline-block; padding: 8px 16px; font-size: 18px; col' +
-                    'or: #FFF; background: #03A9F4; text-decoration: none; border-radius:4px; margin-right: 5px; margin-left: 5px;" /></form></div>'
-                + loadInputs +
-                "?id_token=" +
-                 id_token + 
-                "&sellerName=" +
-                req.query.sellerName +
-                "&dnaCode=" +
-                req.query.dnaCode +
-                 endLoadInputs + 
-                 
-                 '</body></html>');
+                    '</b>.</label></div><input type="submit" style="display: inline-block; padding: 8px 16px; font-size: 18px; col' +
+                    'or: #FFF; background: #03A9F4; text-decoration: none; border-radius:4px; margin-right: 5px; margin-left: 5px;">Accept</input>' +
+                    '</form></div></body></html>');
         })
         .catch(function (err) {
             res
