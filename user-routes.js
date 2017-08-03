@@ -459,7 +459,7 @@ app.post('/api/transferAsset', function (req, res) {
         .findOne({username: req.body.buyerName})
         .then(function (user) {
             console.log("sellerName: " + req.body.sellerName);
-            var seller = User.findOne({username: req.body.sellerName}).then(function (user){
+            var seller = User.findOne({username: req.body.sellerName}).then(function (seller, user){
                 console.log("seller found: " + seller.username);
                 var dir = './user_images/' + user.username;
                 if (!fs.existsSync(dir)){
