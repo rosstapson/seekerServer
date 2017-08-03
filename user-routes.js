@@ -475,11 +475,11 @@ app.post('/api/transferAsset', function (req, res) {
                 var newAsset = Object.assign({}, asset);
                 newAsset.status = "Active";
                 asset.status = "Transferred";
-                asset.set("dateTransferred", Date.now());
-                newAsset.set("dateTransferred", Date.now());
+                asset.dateTransferred = Date.now();
+                newAsset.dateTransferred = Date.now();
                 asset.pendingTransfer = false;
                 newAsset.pendingTransfer = false;
-                asset.set("transferredToUser", user.username);
+                asset.transferredToUser = user.username;
                 newAsset.pendingTransferToUser = '';
                 
                 asset.imageUrls.forEach(function(url) {
