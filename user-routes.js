@@ -405,7 +405,7 @@ app.get('/api/transferAsset', function (req, res) {
                 .status(200)
                 .send(htmlHeader + htmlBodyTagAndLogo + // righty. this is a form with a post, so, hidden inputs, not url params.
                     '<div style="text-align: center; font-family: roboto"><form id="myForm" method="post"'
-                    +'action = "https://seekerdnasecure.co.za:3002/api/transferAsset >' +
+                    +'action = "https://seekerdnasecure.co.za:3002/api/transferAsset">' +
                     '<input type="hidden" name="id_token" value="' + id_token + '">' +
                     '<input type="hidden" name="sellerName" value="' + req.query.sellerName + '">' +
                     '<input type="hidden" name="buyerName" value="' + user.username + '">' + 
