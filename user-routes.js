@@ -347,39 +347,40 @@ app.post('/initiateTransferAsset', function (req, res) {
                 }
                 console.log("found buyer " + buyerUser.email);
                 buyerEmail = buyerUser.email;
+                for (var i = 0; i < user.assets.length; i++) {
+                    if (user.assets[i].dnaCode === req.body.asset.dnaCode) {
+                        //if (user.assets[i]._id === req.body.asset._id) {
+                        //user.assets[i].pendingTransferToUser = req.body.asset.pendingTransferToUser;
+                        user.assets[i].pendingTransferToUser = buyerEmail;
+                        user.assets[i].pendingTransfer = true;
+                        user.assets[i].status = "Pending Transfer";
+                        user.assets[i].dateUpdated = new Date();
+                        tempAsset = user.assets[i];
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found) {
+                    return res
+                        .status(400)
+                        .send({errorMessage: "Asset not found"});
+                    }
+                    user.set("dateUpdated", Date.now());
+                    user.save(function (err, product, numAffected) {
+                    if (err){
+                        console.log(err.message);
+                        res.status(418).send({message: err.message})
+                    }
+                    else {
+                        console.log("user saved");
+                        sendTransferEmail(user, buyerUser, tempAsset);
+                        res.status(200).send({assets: user.assets});
+                    }
+                });
+                    
             }).catch(function(err){
                 throw err;
             })
-        for (var i = 0; i < user.assets.length; i++) {
-          if (user.assets[i].dnaCode === req.body.asset.dnaCode) {
-            //if (user.assets[i]._id === req.body.asset._id) {
-            //user.assets[i].pendingTransferToUser = req.body.asset.pendingTransferToUser;
-            user.assets[i].pendingTransferToUser = buyerEmail;
-            user.assets[i].pendingTransfer = true;
-            user.assets[i].status = "Pending Transfer";
-            user.assets[i].dateUpdated = new Date();
-            tempAsset = user.assets[i];
-            found = true;
-            break;
-          }
-        }
-        if (!found) {
-          return res
-            .status(400)
-            .send({errorMessage: "Asset not found"});
-        }
-        user.set("dateUpdated", Date.now());
-        user.save(function (err, product, numAffected) {
-          if (err){
-            console.log(err.message);
-            res.status(418).send({message: err.message})
-          }
-          else {
-              console.log("user saved");
-            sendTransferEmail(user, buyerUser, tempAsset);
-            res.status(200).send({assets: user.assets});
-          }
-        });
         
       }
     }, function (err) {
