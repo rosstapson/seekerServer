@@ -500,7 +500,7 @@ function sendTransferEmail(seller, buyer, asset) { // usernames - need to find e
         seller.username +
         "'></a>" +
         "<br>If you think that this may be an error, please contact...?<b>";
-        console.log(buyermessage);
+        //console.log(buyermessage);
     sendMailMessage(seller.email, "Asset Transfer", sellerMessage);
     sendMailMessage(buyer.email, "Asset Transfer", buyerMessage);
     // send mail to seekerDNA - what's the address?? :)
