@@ -461,6 +461,7 @@ app.post('/api/transferAsset', function (req, res) {
             console.log("sellerName: " + req.body.sellerName);
             var seller = User.findOne({username: req.body.sellerName}).then(function (seller){
                 console.log("seller found: " + seller.username);
+                //establish image folder
                 var dir = './user_images/' + user.username;
                 if (!fs.existsSync(dir)){
                     fs.mkdirSync(dir);
@@ -472,6 +473,7 @@ app.post('/api/transferAsset', function (req, res) {
                 if (!asset) {
                     return res.status(404).send("Asset not found!");
                 }
+                
                 var newAsset = Object.assign({}, asset);
                 newAsset.status = "Active";
                 asset.status = "Transferred";
