@@ -258,8 +258,8 @@ app.post('/updateasset', function (req, res) {
 });
 app.post('/deleteasset', function (req, res) {
   if (!checkToken(req)) {
-            return res.status(401).send({errorMessage: "Invalid token"})
-    }
+    return res.status(401).send({errorMessage: "Invalid token"})
+  }
 
   var user = User
     .findOne({username: req.body.username})

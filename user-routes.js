@@ -392,7 +392,7 @@ app.post('/initiateTransferAsset', function (req, res) {
 
 //display confirm transfer asset page
 app.get('/api/transferAsset', function (req, res) {
-    var id_token = req.body.id_token;
+    var id_token = req.query.id_token;
     if (!id_token) {        
         return res
             .status(404)
@@ -419,15 +419,15 @@ app.get('/api/transferAsset', function (req, res) {
                 .send(htmlHeader + htmlBodyTagAndLogo + // righty. this is a form with a post, so, hidden inputs, not url params.
                     '<div style="text-align: center; font-family: roboto"><form id="myForm" method="post">' +
                     '<input type="hidden" name="id_token" value="' + id_token + '">' +
-                    '<input type="hidden" name="sellerName" value="' + req.body.sellerName + '">' +
+                    '<input type="hidden" name="sellerName" value="' + req.query.sellerName + '">' +
                     '<input type="hidden" name="buyerName" value="' + user.username + '">' + 
-                    '<input type="hidden" name="dnaCode" value="' + req.body.dnaCode + '">' +
+                    '<input type="hidden" name="dnaCode" value="' + req.query.dnaCode + '">' +
                     '<div ><label style="font-size: 20px; font-weight: 700; margin-bottom: 2px; ' +
                     'color: #757575;" >Click "Accept" to confirm transfer of asset <b>' +
-                    req.body.dnaCode +       
+                    req.query.dnaCode +       
 
                     '</b> from user <b>' +
-                    req.body.sellerName +       
+                    req.query.sellerName +       
 
                     '</b> to user <b>' +
                     user.username +
