@@ -24,6 +24,17 @@ var transporter = nodemailer.createTransport({
     }
 });
 
+// these vars for transferAsset
+var loadInputs = '<script>function loadInputs() {  document.getElementById("myForm").action = "ht' +
+        'tps://seekerdnasecure.co.za:3002/api/transferAsset';
+var endLoadInputs = '";   }</script>';
+var htmlBodyTagAndLogo = '<body><div style=" margin: auto;"><img src="https://seekerdnasecure.co.za:3002/l' +
+        'ogo.png" style="height: 200px; display: block; margin: auto;" alt="logo"/></div>';
+var htmlHeader = "<!DOCTYPE html><html lang=\"en\"><head><meta charset=\"utf-8\"><meta name=\"\"vi" +
+        "ewport\" content=\"width=device-width,initial-scale=1\"><link rel=\"icon\" href=" +
+        "\"https://seekerdnasecure.co.za:3002/favicon.ico\"><title>Seeker DNA Asset Regis" +
+        "ter</title></head>";
+
 function addUser(req, res) {
 
     var user = new User(req.body);
@@ -304,9 +315,9 @@ app.post('/token', function(req, res) {
         .send({ decoded: true });
 });
 
+// send email with link and token
 
-app.post('/initiateTransferAsset', function (req, res) {
-  // send email with link and token
+app.post('/initiateTransferAsset', function (req, res) {  
  
   if (!checkToken(req)) {
             return res.status(401).send({errorMessage: "Invalid token"})
@@ -358,7 +369,7 @@ app.post('/initiateTransferAsset', function (req, res) {
           }
           else {
               console.log("user saved");
-            sendTransferEmail(req.body.username, sellerEmail, buyerEmail, tempAsset);
+            sendTransferEmail(user, buyerUser, tempAsset);
             res.status(200).send({assets: user.assets});
           }
         });
@@ -371,27 +382,125 @@ app.post('/initiateTransferAsset', function (req, res) {
     })
 });
 
-app.post('/completeTransferAsset', function (req, res) {
-  if (!checkToken(req)) {
-            return res.status(401).send({errorMessage: "Invalid token"})
+//display confirm transfer asset page
+app.get('/api/transferAsset', function (req, res) {
+    var id_token = req.query.id_token;
+    if (!id_token) {        
+        return res
+            .status(404)
+            .send("Invalid token");
     }
-    console.log("placeholder - complete transfer");
-    // find seller user, find buyer user
-    // find asset in seller, add it to buyer.assets, delete it from seller
-    // save both users
+    var decoded = null;
+    try {
+        decoded = jwt.verify(id_token, config.secret);
+        // decoded = jwt.verify(id_token, config.secret, { ignoreExpiration: true });
+        // //just for debuggery
+    } catch (err) {
+        console.log(err.message);
+        return res
+            .status(404)
+            .send(err.message);
+    }
+
+    var user = User
+        .findOne({username: decoded.username})
+        .then(function (user) {
+            res
+                .status(200)
+                .send(htmlHeader + htmlBodyTagAndLogo + 
+                    '<div style="text-align: center; font-family: roboto"><form id="myForm" method="post">' +
+                    '<div ><label style="font-size: 20px; font-weight: 700; margin-bottom: 2px; ' +
+                    'color: #757575;" >Please confirm transfer asset ' +
+                    req.query.dnaCode +       
+
+                    ' from user ' +
+                    req.query.sellerName +       
+
+                    'to user ' +
+                    decoded.username +
+
+                    '</label></div><input type="submit" style="display: inline-block; padding: 8px 16px; font-size: 18px; col' +
+                    'or: #FFF; background: #03A9F4; text-decoration: none; border-radius:4px; margin-right: 5px; margin-left: 5px;" /></form></div>'
+                + loadInputs +
+                "?id_token=" +
+                 id_token + 
+                "&sellerName=" +
+                req.query.sellerName +
+                "&dnaCode=" +
+                req.query.dnaCode +
+                 endLoadInputs + 
+                 
+                 '</body></html>');
+        })
+        .catch(function (err) {
+            res
+                .status(404)
+                .send("user not found");
+        });
 });
 
-function sendTransferEmail(buyer, sellerEmail, buyerEmail, asset) { // usernames - need to find emails
+// complete transfer and send some confirmatory
+// htmlz.
+
+app.post('/api/transferAsset', function (req, res) {
+    var id_token = req.query.id_token;
+    if (!id_token) {        
+        return res
+            .status(404)
+            .send("Invalid token");
+    }
+    var decoded = null;
+    try {
+        decoded = jwt.verify(id_token, config.secret);
+        // decoded = jwt.verify(id_token, config.secret, { ignoreExpiration: true });
+        // //just for debuggery
+    } catch (err) {
+        console.log(err.message);
+        return res
+            .status(404)
+            .send(err.message);
+    }
+
+    var user = User
+        .findOne({username: decoded.username})
+        .then(function (user) {
+            // FIND SELLER FROM req.query.sellerUser (username)
+            // FIND ASSET WITHIN SELLUSER
+            // COPY ASSET TO user
+            // COPY IMAGES TO user image FOLDER
+            // CHANGE STATUS ON asset ON sellerUser to 'Transferred' AND SET DATE
+            // SET STATUS ON buyerUser's ASSET TO Active
+            console.log("transfer asset: user found: " + user.username);
+
+        })
+        .catch(function (err) {
+            res
+                .status(404)
+                .send("user not found");
+        });
+});
+
+
+function sendTransferEmail(seller, buyer, asset) { // usernames - need to find emails
     console.log("send transfer mail");
     
     var id_token = createBuyerToken(buyer);
     var sellerMessage = "<b>You have received this message because you have initiated the transfer " +
         " of asset with DNA code <i>" + asset.dnaCode + "</i> to user " +
-        buyer + ". If you did not do this, or think that this may be an error</b>";
-    var buyerMessage = "You have received this message because user <i> " + sellerEmail + " </i> has initiated the transfer to you of " + 
-        "an asset with DNA code <i>" + asset.dnaCode + "</i>. If you think that this may be an error, please contact...?";
-    sendMailMessage(sellerEmail, "Asset Transfer", sellerMessage);
-    sendMailMessage(buyerEmail, "Asset Transfer", buyerMessage);
+        buyer.username + ". If you did not do this, or think that this may be an error</b>";
+    var buyerMessage = "<b>You have received this message because user <i> " + seller.username + " </i> has initiated the transfer to you of " + 
+        "an asset with DNA code <i>" + asset.dnaCode + "</i>. " + 
+        "Please go to <a href='" +
+        "https://seekerdnasecure.co.za:3002/api/transferAsset?id_token=" +
+        id_token +
+        "&dnaCode=" +
+        asset.dnaCode +
+        "&sellerName=" +        
+        seller.username +
+        "'></a>" +
+        "<br>If you think that this may be an error, please contact...?<b>";
+    sendMailMessage(seller.email, "Asset Transfer", sellerMessage);
+    sendMailMessage(buyer.email, "Asset Transfer", buyerMessage);
     // send mail to seekerDNA - what's the address?? :)
     
 }

@@ -9,7 +9,7 @@ import quoter from './quoter';
 var app = module.exports = express.Router();
 
 var jwtCheck = () => {
-  console.log("ZOMG very secret: " + config.secret);
+  
   jwt({secret: config.secret});
 }
 
