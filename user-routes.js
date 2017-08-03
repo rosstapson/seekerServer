@@ -337,7 +337,7 @@ app.post('/initiateTransferAsset', function (req, res) {
       } else {
         var found = false;
         sellerEmail = user.email;
-        console.log("found seller" + user.email);
+        console.log("found seller " + user.email);
         buyerUser = User.findOne({username: req.body.asset.pendingTransferToUser})
             .then(function (buyerUser) {
                 if (!buyerUser) {
@@ -345,7 +345,7 @@ app.post('/initiateTransferAsset', function (req, res) {
                     .status(400)
                     .send({errorMessage: "Buyer not found"});
                 }
-                console.log("found buyer" + buyerUser.email);
+                console.log("found buyer " + buyerUser.email);
                 buyerEmail = buyerUser.email;
             }).catch(function(err){
                 throw err;
@@ -353,7 +353,8 @@ app.post('/initiateTransferAsset', function (req, res) {
         for (var i = 0; i < user.assets.length; i++) {
           if (user.assets[i].dnaCode === req.body.asset.dnaCode) {
             //if (user.assets[i]._id === req.body.asset._id) {
-            user.assets[i].pendingTransferToUser = req.body.asset.pendingTransferToUser;
+            //user.assets[i].pendingTransferToUser = req.body.asset.pendingTransferToUser;
+            user.assets[i].pendingTransferToUser = buyerEmail;
             user.assets[i].pendingTransfer = true;
             user.assets[i].status = "Pending Transfer";
             user.assets[i].dateUpdated = new Date();
