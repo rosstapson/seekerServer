@@ -458,6 +458,7 @@ app.post('/api/transferAsset', function (req, res) {
     var user = User
         .findOne({username: req.body.buyerName})
         .then(function (user) {
+            console.log("sellerName: " + req.body.sellerName);
             var seller = User.findOne({username: req.body.sellerName}).then(function (user){
                 console.log("seller found: " + seller.username);
                 var dir = './user_images/' + user.username;
