@@ -437,7 +437,7 @@ app.get('/api/transferAsset', function (req, res) {
         .catch(function (err) {
             res
                 .status(404)
-                .send("user not found");
+                .send(err.message);
         });
 });
 
@@ -500,7 +500,7 @@ function sendTransferEmail(seller, buyer, asset) { // usernames - need to find e
         "&sellerName=" +        
         seller.username +
         "'> this link to confirm the transfer</a>." +
-        "<br>If you think that this may be an error, please contact...?<b>";
+        "<br>If you think that this may be an error, please contact DNA@seekerdna.co.za<b>";
         //console.log(buyermessage);
     sendMailMessage(seller.email, "Asset Transfer", sellerMessage);
     sendMailMessage(buyer.email, "Asset Transfer", buyerMessage);
