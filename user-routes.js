@@ -393,26 +393,13 @@ app.post('/initiateTransferAsset', function (req, res) {
 //display confirm transfer asset page
 app.get('/api/transferAsset', function (req, res) {
     var id_token = req.query.id_token;
-    if (!id_token) {        
-        return res
-            .status(404)
-            .send("Invalid token");
-    }
-    var decoded = null;
-    try {
-        decoded = jwt.verify(id_token, config.secret);
         
-        // decoded = jwt.verify(id_token, config.secret, { ignoreExpiration: true });
-        // //just for debuggery
-    } catch (err) {
-        console.log(err.message);
-        return res
-            .status(404)
-            .send(err.message);
+    if (!checkToken(req)) {
+        return res.status(401).send({errorMessage: "Invalid token"})
     }
 
     var user = User
-        .findOne({username: decoded.username})
+        .findOne({username: req.query.buyerName})
         .then(function (user) {
             res
                 .status(200)
@@ -501,6 +488,8 @@ function sendTransferEmail(seller, buyer, asset) { // usernames - need to find e
         asset.dnaCode +
         "&sellerName=" +        
         seller.username +
+        "&buyerName=" +
+        buyer.username
         "'> this link to confirm the transfer</a>." +
         "<br>If you think that this may be an error, please contact DNA@seekerdna.co.za<b>";
         //console.log(buyermessage);
