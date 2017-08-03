@@ -498,14 +498,14 @@ function sendTransferEmail(seller, buyer, asset) { // usernames - need to find e
         buyer.username + ". If you did not do this, or think that this may be an error please contact us at DNA@seekerdna.co.za</b>";
     var buyerMessage = "<b>You have received this message because user <i> " + seller.username + " </i> has initiated the transfer to you of " + 
         "an asset with DNA code <i>" + asset.dnaCode + "</i>. " + 
-        "Please go to <a href='" +
+        "Please click <a href='" +
         "https://seekerdnasecure.co.za:3002/api/transferAsset?id_token=" +
         id_token +
         "&dnaCode=" +
         asset.dnaCode +
         "&sellerName=" +        
         seller.username +
-        "'></a>" +
+        "'> this link to confirm the transfer</a>." +
         "<br>If you think that this may be an error, please contact...?<b>";
         //console.log(buyermessage);
     sendMailMessage(seller.email, "Asset Transfer", sellerMessage);
