@@ -472,7 +472,7 @@ app.post('/api/transferAsset', function (req, res) {
                 if (!asset) {
                     return res.status(404).send("Asset not found!");
                 }
-                var newAsset = Object.Assign({}, asset);
+                var newAsset = Object.assign({}, asset);
                 newAsset.status = "Active";
                 asset.status = "Transferred";
                 asset.set("dateTransferred", Date.now());
