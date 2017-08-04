@@ -282,7 +282,7 @@ app.post('/deleteasset', function (req, res) {
           .status(400)
           .send({errorMessage: "User not found"});
       } else { //var tempAsset = req.body.asset;
-        asset = user.assets.find(function(asset) {
+        var asset = user.assets.find(function(asset) {
           return asset.dnaCode === req.body.dnaCode;
         });
         asset.imageUrls.forEach(function(url) {
