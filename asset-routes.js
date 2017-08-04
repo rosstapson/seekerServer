@@ -146,7 +146,7 @@ app.post('/file-upload', function (req, res) {
     .then(function(user) {
       for (var i = 0; i < user.assets.length; i++) {
         if (user.assets[i].dnaCode === dnaCode) {
-          user.assets[i].imageUrls.push(username + '/' + newName);
+          user.assets[i].imageUrls.push(username + '/' + dnaCode + '/'+ newName);
           user.save();
           break;
         }
