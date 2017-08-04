@@ -16,7 +16,7 @@ var clamEngine = null;
 var clam = require('clam-engine');
     
     
-console.log("bootstrap attempt at creating clam engine");
+console.log("bootstrap attempt at creating clam engine - please allow several minutes before attempting any image uploads!");
 clam.createEngine(function (err, engine) {
   if (err) {
     console.log("unable to bootstrap virus engine, recommend dummy image upload ASAP");
@@ -94,13 +94,13 @@ app.post('/file-upload', function (req, res) {
       console.log('Error: filename,username = ' + tempName + ',' + username);
       return res.status(500).send({errorMessage: 'Unable to extract user information for upload'});      
     }
-    var dir = './user_images/' + username;
+    var dir = './user_images/' + username + '/' + dnaCode;
     if (!fs.existsSync(dir)){
       fs.mkdirSync(dir);
     }
     var newName = renameFile(tempName);
     var oldPath = __dirname + '/user_images/' + tempName;
-    var newPath = __dirname + '/user_images/' + username + '/' + dnaCode +'/' + newName;
+    var newPath = __dirname + '/user_images/' + username + '/' + dnaCode + '/' + newName;
     if (!fs.existsSync(oldPath)) {
 	    console.log("feck. inexplicable error, possibly non-fatal");
     }
