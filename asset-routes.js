@@ -76,7 +76,7 @@ app.post('/file-upload', function (req, res) {
   req.pipe(req.busboy);
   var tempName = '';
   var username = '';
-  var dnaCode = '';
+  var dnaCode = 'default';
   req
     .busboy
     .on('file', function (fieldname, file, filename) {
@@ -100,7 +100,7 @@ app.post('/file-upload', function (req, res) {
     }
     var newName = renameFile(tempName);
     var oldPath = __dirname + '/user_images/' + tempName;
-    var newPath = __dirname + '/user_images/' + username + '/' + newName;
+    var newPath = __dirname + '/user_images/' + username + '/' + dnaCode +'/' + newName;
     if (!fs.existsSync(oldPath)) {
 	    console.log("feck. inexplicable error, possibly non-fatal");
     }
