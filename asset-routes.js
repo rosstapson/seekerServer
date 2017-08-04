@@ -12,7 +12,20 @@ import cors from 'cors';
 
 var app = module.exports = express.Router();
 app.use(busboy());
-
+var clamEngine = null;
+var clam = require('clam-engine');
+    
+    
+console.log("bootstrap attempt at creating clam engine");
+clam.createEngine(function (err, engine) {
+  if (err) {
+    console.log("unable to bootstrap virus engine, recommend dummy image upload ASAP");
+    return console.log('Error', err);    
+  }
+  clamEngine = engine;
+  console.log("virus engine bootstrap successful");
+});    
+      
 app.post('/deleteimage', function(req, res) {
   if (!checkToken(req)) {
             return res.status(401).send({errorMessage: "Invalid token"})
@@ -53,7 +66,7 @@ app.post('/deleteimage', function(req, res) {
   
   
 });
-var outsideEngine = null;
+
 app.options('/file-upload', cors());
 app.post('/file-upload', function (req, res) {
   if (!checkToken(req)) {
@@ -92,19 +105,19 @@ app.post('/file-upload', function (req, res) {
 	    console.log("feck. inexplicable error, possibly non-fatal");
     }
     // virus scan 
-    var clam = require('clam-engine');
     
-    if (!outsideEngine || outsideEngine == null) {
+    
+    if (!clamEngine || clamEngine == null) {
       console.log("outside engine is null; creating clam engine");
       clam.createEngine(function (err, engine) {
         if (err) {
           return console.log('Error', err);
         }
-        outsideEngine = engine;
+        clamEngine = engine;
       });    
     }    
     
-    outsideEngine.scanFile(oldPath, function (err, virus) {
+    clamEngine.scanFile(oldPath, function (err, virus) {
       if (err) {
         console.log('Virus scan error: ', err);
         return res.status(500).send({errorMessage: err});
