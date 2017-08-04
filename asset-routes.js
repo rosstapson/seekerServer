@@ -35,7 +35,7 @@ app.post('/deleteimage', function(req, res) {
    fs.unlinkSync(__dirname + '/user_images/' + req.body.url);
   }
   catch(err) {
-    console.log(err);
+    console.log("Unable to delete image" + req.body.url + ", possibly invalid url");
     
   }
   var assetInQuestion = null;
@@ -282,7 +282,18 @@ app.post('/deleteasset', function (req, res) {
           .status(400)
           .send({errorMessage: "User not found"});
       } else { //var tempAsset = req.body.asset;
-
+        asset = user.assets.find(function(asset) {
+          return asset.dnaCode === req.body.dnaCode;
+        });
+        asset.imageUrls.forEach(function(url) {
+          try {
+            fs.unlinkSync(__dirname + '/user_images/' + url);
+            }
+            catch(err) {
+              console.log("Unable to delete image" + url + ", possibly invalid url");
+              
+            }
+        });
         //user.assets.push(req.body.asset);
         user.assets = user
           .assets
