@@ -131,7 +131,7 @@ app.post('/file-upload', function (req, res) {
         // scan successful, file clean
         fs.renameSync(oldPath, newPath);        
         updateAssetImageUrl(username, dnaCode, newName);
-        res.status(201).send({imageUrl: username + '/' + newName});
+        res.status(201).send({imageUrl: username + '/' + dnaCode + '/' + newName});
       }
       
   });
