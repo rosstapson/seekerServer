@@ -154,6 +154,15 @@ const userSchema = new Schema({
             type: String,
             required: false
         },
+        dateTransferred: {
+            type: 'Date',
+            default: Date.now,
+            required: false
+        },
+        transferredToUser: {
+            type: String,
+            required: false
+        },
         description: {
             type: String,
             required: false

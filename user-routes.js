@@ -490,13 +490,11 @@ app.post('/api/transferAsset', function (req, res) {
                     //copy the physical file
                     var fileName = __dirname + '/user_images/' + url;
                     var newFileName = __dirname + '/user_images/' + newUrl;
-                    //fs.renameSync(fileName, newFileName); 
-                    // instead of 'moving' the file
-                    // we're copying it. so:
-                    copyFile(fileName, newFileName, function(err) {
-                        console.log("Unable to copy image file" + fileName);
-                        console.log(err);
-                    })
+                    fs.renameSync(fileName, newFileName); 
+                    // save new folderName to BOTH assets:
+                    // we're not deleting the asset from the seller
+                    url = newUrl;
+                    
                 })
                 user.assets.push(asset);
                 user.save();
@@ -514,29 +512,29 @@ app.post('/api/transferAsset', function (req, res) {
 });
 
 // helper function for copying image files
-function copyFile(source, target, cb) {
-  var cbCalled = false;
+// function copyFile(source, target, cb) {
+//   var cbCalled = false;
 
-  var rd = fs.createReadStream(source);
-  rd.on("error", function(err) {
-    done(err);
-  });
-  var wr = fs.createWriteStream(target);
-  wr.on("error", function(err) {
-    done(err);
-  });
-  wr.on("close", function(ex) {
-    done();
-  });
-  rd.pipe(wr);
+//   var rd = fs.createReadStream(source);
+//   rd.on("error", function(err) {
+//     done(err);
+//   });
+//   var wr = fs.createWriteStream(target);
+//   wr.on("error", function(err) {
+//     done(err);
+//   });
+//   wr.on("close", function(ex) {
+//     done();
+//   });
+//   rd.pipe(wr);
 
-  function done(err) {
-    if (!cbCalled) {
-      cb(err);
-      cbCalled = true;
-    }
-  }
-}
+//   function done(err) {
+//     if (!cbCalled) {
+//       cb(err);
+//       cbCalled = true;
+//     }
+//   }
+// }
 function sendTransferEmail(seller, buyer, asset) { // usernames - need to find emails
     console.log("send transfer mail");
     
