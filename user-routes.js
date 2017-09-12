@@ -490,10 +490,15 @@ app.post('/api/transferAsset', function (req, res) {
                     //copy the physical file
                     var fileName = __dirname + '/user_images/' + url;
                     var newFileName = __dirname + '/user_images/' + newUrl;
-                    fs.renameSync(fileName, newFileName); 
+
+                    fs.createReadStream(fileName).pipe(fs.createWriteStream(newFileName)); 
+                    //scratch this below stuff - we're physically copying the file during transfer,
+                    // and giving the buyer the new file name, as above
+
+                    //fs.renameSync(fileName, newFileName); 
                     // save new folderName to BOTH assets:
                     // we're not deleting the asset from the seller
-                    url = newUrl;
+                    //url = newUrl;
                     
                 })
                 user.assets.push(asset);
