@@ -344,7 +344,7 @@ app.post('/initiateTransferAsset', function (req, res) {
                 if (!buyerUser) {
                     return res
                     .status(400)
-                    .send({errorMessage: "Buyer not found"});
+                    .send({errorMessage: "Buyer username not found"});
                 }
                 console.log("found buyer " + buyerUser.email);
                 buyerEmail = buyerUser.email;
@@ -421,8 +421,8 @@ app.get('/api/transferAsset', function (req, res) {
                     '</b> to user <b>' +
                     user.username +
 
-                    '</b>.</label></div><input type="submit" style="display: inline-block; padding: 8px 16px; font-size: 18px; col' +
-                    'or: #FFF; background: #03A9F4; text-decoration: none; border-radius:4px; margin-right: 5px; margin-left: 5px;">Accept</input>' +
+                    '</b>.</label></div><input type="submit" value="Accept" style="display: inline-block; padding: 8px 16px; font-size: 18px; col' +
+                    'or: #FFF; background: #03A9F4; text-decoration: none; border-radius:4px; margin-right: 5px; margin-left: 5px;" />' +
                     '</form></div></body></html>');
         })
         .catch(function (err) {
@@ -504,7 +504,10 @@ app.post('/api/transferAsset', function (req, res) {
                 user.assets.push(asset);
                 user.save();
                 seller.save();
-                return res.status(201).send({message: "Asset transferred"});
+                var successMessage = htmlHeader + 
+                    htmlBodyTagAndLogo +                    
+                    "<div style='text-align: center; font-family: roboto'><h2>Transfer successful!</h2></div></body></html>";
+                return res.status(201).send(successMessage);
                 
             })           
 
