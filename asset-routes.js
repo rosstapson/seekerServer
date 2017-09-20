@@ -209,6 +209,7 @@ app.post('/file-upload', function (req, res) {
     });
 
     function parseXL(username, filePath) {
+      console.log("parseXL filePath:" + filePath);
       var rejected = [];
       var workbook = XLSX.readFile(filePath);
       var sheet_name_list = workbook.SheetNames;
