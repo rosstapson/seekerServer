@@ -198,9 +198,12 @@ app.post('/file-upload', function (req, res) {
           return res.status(500).send({errorMessage: "Virus found in file"});
         }
         else {
-          // scan successful, file clean   
-          var newName = renameFile(filePath);
-          fs.renameSync(filePath, newName);           
+          console.log("File scanned, no threat found");
+          var newName = __dirname + '/pin_files/' + renameFile(filePath);
+          fs.renameSync(filePath, newName);
+          if (!fs.existsSync(newName)) {
+            console.log("zomg. inexplicable error");
+          }        
           var pins = parseXL(username, newName); //returns an array of strings, those pins that were rejected..
           try {
             fs.unlinkSync(newName);
@@ -227,10 +230,7 @@ app.post('/file-upload', function (req, res) {
           var headers = {};
           var data = [];
           for(z in worksheet) {
-              if(z[0] === '!') continue;
-              //parse out the column, row, and value
-              // var col = z.substring(0,1);
-              // var row = parseInt(z.substring(1));
+              if(z[0] === '!') continue;              
               var value = worksheet[z].v;
               if (!isNaN(parseFloat(value)) && isFinite(value)) {
                 var returnValue = saveProduct(value, username);
