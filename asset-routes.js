@@ -231,13 +231,11 @@ app.post('/file-upload', function (req, res) {
       var rejected = [];
       var workbook = XLSX.readFile('pins.xls');
       var sheet_name_list = workbook.SheetNames;
-      sheet_name_list.forEach(function(y) {
-          var worksheet = workbook.Sheets[y];
-          var headers = {};
-          var data = [];
-          for(z in worksheet) {
-              if(z[0] === '!') continue;              
-              var value = worksheet[z].v;
+      sheet_name_list.forEach(function(sheetName) {
+          var worksheet = workbook.Sheets[sheetName];          
+          for(row in worksheet) {
+              if(row[0] === '!') continue;              
+              var value = worksheet[row].v;
               if (!isNaN(parseFloat(value)) && isFinite(value)) {
                 var returnValue = saveProduct(value, username);
                 if (returnValue !== '') {
