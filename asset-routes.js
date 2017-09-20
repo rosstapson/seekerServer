@@ -254,7 +254,7 @@ app.post('/file-upload', function (req, res) {
           if (!status) {
               status = "Unallocated";
           }
-          console.log(dnaCode + " status: " + status);
+          
              if (!isNaN(parseFloat(dnaCode)) && isFinite(dnaCode)) {
                var returnValue = saveProduct(dnaCode, status, username);
                if (returnValue) {
