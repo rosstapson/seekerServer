@@ -10,7 +10,8 @@ import cuid from 'cuid';
 import {checkToken} from './auth';
 import cors from 'cors';
 //import clam from 'clamscan';
-import XLSX from 'xlsx';
+//import XLSX from 'xlsx';
+var XLSX = require('xlsx');
 
 var app = module.exports = express.Router();
 app.use(busboy());
@@ -235,8 +236,8 @@ app.post('/file-upload', function (req, res) {
         console.log("sheetName: " + sheetName);
         
           var worksheet = workbook.Sheets[sheetName];
-          var tempJson = XLSX.utils.sheet_to_json(worksheet);
-          console.log("tempJson: "  + tempJson);
+          // var tempJson = XLSX.utils.sheet_to_json(worksheet);
+          // console.log("tempJson: "  + tempJson);
           for(row in worksheet) {
               if(row[0] === '!') continue;              
               var value = worksheet[row].v;
