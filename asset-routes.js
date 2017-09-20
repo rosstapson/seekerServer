@@ -229,7 +229,7 @@ app.post('/file-upload', function (req, res) {
     function parseXL(username, filePath) {
       console.log("parseXL filePath:" + filePath);
       var rejected = [];
-      var workbook = XLSX.readFile('./pins.xls');
+      var workbook = XLSX.readFile('pins.xls');
       var sheet_name_list = workbook.SheetNames;
       sheet_name_list.forEach(function(y) {
           var worksheet = workbook.Sheets[y];
