@@ -3,12 +3,14 @@
 
 import express from 'express';
 import User from './models/User';
+import Product from './models/Product';
 import fs from 'fs';
 import busboy from 'connect-busboy';
 import cuid from 'cuid';
 import {checkToken} from './auth';
 import cors from 'cors';
 //import clam from 'clamscan';
+import XLSX from 'xlsx';
 
 var app = module.exports = express.Router();
 app.use(busboy());
@@ -139,6 +141,114 @@ app.post('/file-upload', function (req, res) {
     
   }); 
 
+  // upload pins from xls file
+  app.options('/upload-pins', cors());
+  app.post('/upload-pins', function (req, res) {
+    if (!checkToken(req)) {
+              return res.status(401).send({errorMessage: "Invalid token"})
+      }
+    var fstream;
+    req.pipe(req.busboy);
+    var tempName = '';
+    var username = '';
+    
+    req
+      .busboy
+      .on('file', function (fieldname, file, filename) {        
+        fstream = fs.createWriteStream(__dirname + '/pin_files/' + filename);
+        file.pipe(fstream);
+        tempName = filename;      
+      });
+    req.busboy.on('field', function(fieldName, value) {    
+      if(fieldName === 'username') {username = value;}      
+    });
+    req.busboy.on('finish', function() {    
+      if (tempName == '' || username == '') {
+        console.log('Error: filename,username = ' + tempName + ',' + username);
+        return res.status(500).send({errorMessage: 'Unable to extract pins for upload'});      
+      }
+      var dir = './user_images/' + username + '/' + dnaCode;
+      
+      var filePath = __dirname + '/pin_files/' + tempName;
+      
+      if (!fs.existsSync(filePath)) {
+        console.log("pins. zomg. inexplicable error, possibly non-fatal");
+      }
+      // virus scan 
+      
+      
+      if (!clamEngine || clamEngine == null) {
+        console.log("outside engine is null; creating clam engine");
+        clam.createEngine(function (err, engine) {
+          if (err) {
+            return console.log('Error', err);
+          }
+          clamEngine = engine;
+        });    
+      }    
+      
+      clamEngine.scanFile(filePath, function (err, virus) {
+        if (err) {
+          console.log('Virus scan error: ', err);
+          return res.status(500).send({errorMessage: err});
+        }
+        if (virus) {
+          console.log('Virus found! Deleting file ' + filePath, virus);
+          fs.unlinkSync(filePath);
+          return res.status(500).send({errorMessage: "Virus found in file"});
+        }
+        else {
+          // scan successful, file clean                
+          var pins = parseXL(username, filePath); //returns an array of strings, those pins that were rejected..
+          res.status(201).send({rejected: pins});
+        }
+        
+    });
+  });
+      
+    });
+
+    function parseXL(username, filePath) {
+      var rejected = [];
+      var workbook = XLSX.readFile(filePath);
+      var sheet_name_list = workbook.SheetNames;
+      sheet_name_list.forEach(function(y) {
+          var worksheet = workbook.Sheets[y];
+          var headers = {};
+          var data = [];
+          for(z in worksheet) {
+              if(z[0] === '!') continue;
+              //parse out the column, row, and value
+              // var col = z.substring(0,1);
+              // var row = parseInt(z.substring(1));
+              var value = worksheet[z].v;
+              if (!isNaN(parseFloat(value)) && isFinite(value)) {
+                var returnValue = saveProduct(value, username);
+                if (returnValue !== '') {
+                  rejected.push(returnValue);
+                }
+              }
+          }
+          //drop those first two rows which are empty
+          data.shift();
+          data.shift();
+          //console.log(data);
+      });
+      return rejected;
+    }
+    function saveProduct(pin, username) {
+      var product = new Product();
+      product.dnaCode = pin;
+      product.addedBy = username;
+      product.status = "Unallocated";
+      product.save().then(function(pin) {
+        return '';
+      }        
+      ).catch(function(err) {
+        return pin;
+      });
+    }
+
   function updateAssetImageUrl(username, dnaCode, newName) {
     var _this = this;
     var user = User
@@ -202,6 +312,19 @@ app.post('/addasset', function (req, res) {
       } else {
         //var tempAsset = req.body.asset;
 
+        //check Product table for dna pin
+        var prod = Product.findOne({dnaCode: req.body.asset.dnaCode})
+          .then(function(prod) {
+            if(!prod) {
+              return res.status(400).send({errorMessage: "DNA Pin not found"});
+            }
+            if(prod.status !== 'Unallocated') {
+              return res.status(400).send({errorMessage: "DNA Pin has already been allocated"});
+            }
+            prod.status = "Allocated";
+            prod.allocatedTo = req.body.username;
+          })
+
         user
           .assets
           .push(req.body.asset);
@@ -211,7 +334,14 @@ app.post('/addasset', function (req, res) {
             res.status(418).send({message: err.message})
           }
           else {
-            res.status(200).send({assets: user.assets});
+            prod.save(function (error, product, numAffected) {
+              if (error) {
+                res.status(418).send({message: error.message});
+              }
+              else {
+                res.status(200).send({assets: user.assets});
+              }
+            });            
           }
         });
         
