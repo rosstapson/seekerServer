@@ -199,7 +199,8 @@ app.post('/file-upload', function (req, res) {
         }
         else {
           // scan successful, file clean   
-          var newName = renameFile(filePath);             
+          var newName = renameFile(filePath);
+          fs.renameSync(filePath, newName);           
           var pins = parseXL(username, newName); //returns an array of strings, those pins that were rejected..
           try {
             fs.unlinkSync(newName);
