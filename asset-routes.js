@@ -198,8 +198,16 @@ app.post('/file-upload', function (req, res) {
           return res.status(500).send({errorMessage: "Virus found in file"});
         }
         else {
-          // scan successful, file clean                
-          var pins = parseXL(username, filePath); //returns an array of strings, those pins that were rejected..
+          // scan successful, file clean   
+          var newName = renameFile(filePath);             
+          var pins = parseXL(username, newName); //returns an array of strings, those pins that were rejected..
+          try {
+            fs.unlinkSync(newName);
+            }
+            catch(err) {
+              console.log("Unable to delete file " + url + ", possibly invalid url");
+              
+            }
           res.status(201).send({rejected: pins});
         }
         
