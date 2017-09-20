@@ -233,7 +233,10 @@ app.post('/file-upload', function (req, res) {
       var sheet_name_list = workbook.SheetNames;
       sheet_name_list.forEach(function(sheetName) {
         console.log("sheetName: " + sheetName);
-          var worksheet = workbook.Sheets[sheetName];          
+        
+          var worksheet = workbook.Sheets[sheetName];
+          var tempJson = XLSX.utils.sheet_to_json(worksheet);
+          console.log("tempJson: "  + tempJson);
           for(row in worksheet) {
               if(row[0] === '!') continue;              
               var value = worksheet[row].v;
