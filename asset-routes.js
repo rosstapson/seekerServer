@@ -203,8 +203,14 @@ app.post('/file-upload', function (req, res) {
           fs.renameSync(filePath, newName);
           if (!fs.existsSync(newName)) {
             console.log("zomg. inexplicable error");
-          }        
-          var pins = parseXL(username, newName); //returns an array of strings, those pins that were rejected..
+          }
+          var pins = '';
+          try {   
+            pins = parseXL(username, newName); //returns an array of strings, those pins that were rejected..
+          }
+          catch(err) {
+            console.log(err);
+          }
           try {
             fs.unlinkSync(newName);
             }
@@ -223,7 +229,7 @@ app.post('/file-upload', function (req, res) {
     function parseXL(username, filePath) {
       console.log("parseXL filePath:" + filePath);
       var rejected = [];
-      var workbook = XLSX.readFile(filePath);
+      var workbook = XLSX.readFile('./pins.xls');
       var sheet_name_list = workbook.SheetNames;
       sheet_name_list.forEach(function(y) {
           var worksheet = workbook.Sheets[y];
