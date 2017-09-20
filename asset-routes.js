@@ -141,7 +141,22 @@ app.post('/file-upload', function (req, res) {
 });
     
   }); 
-
+  // view pins
+  app.get('/pins', function(req, res) {
+    if (!checkToken(req)) {
+      return res.status(401).send({errorMessage: "Invalid token"})
+    }
+    Product.find().then(function(products) {
+      if (!products) {
+        res.status(400).send({ errorMessage: "Pins not found" });
+      } else {
+          res.status(200).send({ products: products });
+      }
+    }, function(err) {
+        return re.status(400).send({ errorMessage: err.message });
+    });
+    
+  });
   // upload pins from xls file
   app.options('/upload-pins', cors());
   app.post('/upload-pins', function (req, res) {
@@ -242,33 +257,12 @@ app.post('/file-upload', function (req, res) {
           console.log(dnaCode + " status: " + status);
              if (!isNaN(parseFloat(dnaCode)) && isFinite(dnaCode)) {
                var returnValue = saveProduct(dnaCode, status, username);
-               if (returnValue !== '') {
+               if (returnValue) {
                  rejected.push(returnValue);
                }
              }      
         })
-      // var sheet_name_list = workbook.SheetNames;
-      // sheet_name_list.forEach(function(sheetName) {
-      //   console.log("sheetName: " + sheetName);
-        
-      //     var worksheet = workbook.Sheets[sheetName];
-      //     // var tempJson = XLSX.utils.sheet_to_json(worksheet);
-      //     // console.log("tempJson: "  + tempJson);
-      //     for(row in worksheet) {
-      //         if(row[0] === '!') continue;              
-      //         var value = worksheet[row].v;
-      //         if (!isNaN(parseFloat(value)) && isFinite(value)) {
-      //           var returnValue = saveProduct(value, username);
-      //           if (returnValue !== '') {
-      //             rejected.push(returnValue);
-      //           }
-      //         }
-      //     }
-      //     //drop those first two rows which are empty
-      //     data.shift();
-      //     data.shift();
-      //     //console.log(data);
-      // });
+      
        return rejected;
     }
     function saveProduct(pin, status, username) {
@@ -277,7 +271,7 @@ app.post('/file-upload', function (req, res) {
       product.addedBy = username;
       product.status = status;
       product.save().then(function(pin) {
-        return '';
+        return;
       }        
       ).catch(function(err) {
         return pin;
