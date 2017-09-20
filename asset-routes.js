@@ -167,7 +167,7 @@ app.post('/file-upload', function (req, res) {
         console.log('Error: filename,username = ' + tempName + ',' + username);
         return res.status(500).send({errorMessage: 'Unable to extract pins for upload'});      
       }
-      var dir = './user_images/' + username + '/' + dnaCode;
+      // var dir = './user_images/' + username + '/' + dnaCode;
       
       var filePath = __dirname + '/pin_files/' + tempName;
       
