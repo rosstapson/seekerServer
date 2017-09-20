@@ -231,35 +231,51 @@ app.post('/file-upload', function (req, res) {
       console.log("parseXL filePath:" + filePath);
       var rejected = [];
       var workbook = XLSX.readFile(filePath);
-      var sheet_name_list = workbook.SheetNames;
-      sheet_name_list.forEach(function(sheetName) {
-        console.log("sheetName: " + sheetName);
-        
-          var worksheet = workbook.Sheets[sheetName];
-          // var tempJson = XLSX.utils.sheet_to_json(worksheet);
-          // console.log("tempJson: "  + tempJson);
-          for(row in worksheet) {
-              if(row[0] === '!') continue;              
-              var value = worksheet[row].v;
-              if (!isNaN(parseFloat(value)) && isFinite(value)) {
-                var returnValue = saveProduct(value, username);
-                if (returnValue !== '') {
-                  rejected.push(returnValue);
-                }
-              }
+      var data = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]], {header:1});
+      
+      data.forEach(function(pin) {
+          var dnaCode = pin[0];
+          var status = pin[1];
+          if (!status) {
+              status = "Unallocated";
           }
-          //drop those first two rows which are empty
-          data.shift();
-          data.shift();
-          //console.log(data);
-      });
-      return rejected;
+          console.log(dnaCode + " status: " + status);
+             if (!isNaN(parseFloat(dnaCode)) && isFinite(dnaCode)) {
+               var returnValue = saveProduct(dnaCode, status, username);
+               if (returnValue !== '') {
+                 rejected.push(returnValue);
+               }
+             }      
+        })
+      // var sheet_name_list = workbook.SheetNames;
+      // sheet_name_list.forEach(function(sheetName) {
+      //   console.log("sheetName: " + sheetName);
+        
+      //     var worksheet = workbook.Sheets[sheetName];
+      //     // var tempJson = XLSX.utils.sheet_to_json(worksheet);
+      //     // console.log("tempJson: "  + tempJson);
+      //     for(row in worksheet) {
+      //         if(row[0] === '!') continue;              
+      //         var value = worksheet[row].v;
+      //         if (!isNaN(parseFloat(value)) && isFinite(value)) {
+      //           var returnValue = saveProduct(value, username);
+      //           if (returnValue !== '') {
+      //             rejected.push(returnValue);
+      //           }
+      //         }
+      //     }
+      //     //drop those first two rows which are empty
+      //     data.shift();
+      //     data.shift();
+      //     //console.log(data);
+      // });
+       return rejected;
     }
-    function saveProduct(pin, username) {
+    function saveProduct(pin, status, username) {
       var product = new Product();
       product.dnaCode = pin;
       product.addedBy = username;
-      product.status = "Unallocated";
+      product.status = status;
       product.save().then(function(pin) {
         return '';
       }        
