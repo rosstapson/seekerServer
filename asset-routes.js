@@ -313,8 +313,7 @@ app.post('/add-pin', function(req, res) {
   try {
     new Product(req.body).save().then(function() {
       return res.status(201).send("Success");
-    }), 
-    function(err) {
+    }).catch(err){
       return res.status(500).send({errorMessage: err.message});
     }
   }
