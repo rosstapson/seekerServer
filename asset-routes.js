@@ -397,7 +397,9 @@ app.post('/addasset', function (req, res) {
     return res.status(401).send({errorMessage: "Invalid token"})
   }
   try {
-    if (!checkPinIsUnallocated(req.body.asset.dnaCode)) {
+    var tempPinStatus = checkPinIsUnallocated(req.body.asset.dnaCode);
+    console.log("tempPinStatus: " + tempPinStatus);
+    if (!tempPinStatus) {
       return res.status(400).send({errorMessage: "DNA Pin not found"});
     }
   }
