@@ -305,7 +305,7 @@ function renameFile(fileName) {
 
 // add one product pin
 
-app.post('add-pin', function(req, res) {
+app.post('/add-pin', function(req, res) {
   if (!checkToken(req)) {
     return res.status(401).send({errorMessage: "Invalid token"})
   }
