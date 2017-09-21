@@ -311,7 +311,10 @@ app.post('/add-pin', function(req, res) {
   }
   Product.findOne({dnaCode: req.body.dnaCode}).then(function(product) {
     return res.status(418).send({errorMessage: "Duplicate DNA Pin"});
-  })
+  }, 
+function(err) {
+  console.log("no product found for this pin, so continue.")
+});
   new Product(req.body).save().then(function() {
     return res.status(201).send("Success");
   }), 
