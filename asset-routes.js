@@ -354,6 +354,10 @@ function checkPinIsUnallocated(dnaCode) {
   var prod = Product.findOne({dnaCode: dnaCode})
     .then(function(product) {
       console.log("product found");
+      if (!prod) {
+        console.log("except it's null.");
+        return false;
+      }
       if (product.status === "Unallocated") {
         console.log("unallocated it is.");
         return true;
@@ -370,17 +374,21 @@ function checkPinIsUnallocated(dnaCode) {
 function allocatePin(dnaCode, username) {
   var prod = Product.findOne({dnaCode: dnaCode})
     .then(function(prod){
+      console.log("prod found, about to set status and save");
       prod.status = "Allocated";
       prod.allocatedTo = username;
       prod.save()
         .then(function() {
+          console.log("successfully saved");
           return true;
         })
         .catch(function(err) {
+          console.log("couldn't save: " + err.message);
           return false;
         });
     })
     .catch(function(err) {
+      console.log("some error during allocation: " + err.message);
       return false;
     });
 }
