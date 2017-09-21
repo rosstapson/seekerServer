@@ -367,7 +367,7 @@ function checkPinIsUnallocated(dnaCode) {
         return false;
       }
     }).catch(function(err) {
-      console.log(err.message);
+      console.log("caught an err: " + err.message);
       return false;
     });
 }
