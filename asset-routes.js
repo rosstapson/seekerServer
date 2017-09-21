@@ -360,10 +360,10 @@ function checkPinIsUnallocated(dnaCode) {
       }
       if (product.status === "Unallocated") {
         console.log("unallocated it is.");
-        return true;
+        return product.status;
       }
       else {
-        console.log("but it isn't allocated");
+        console.log("but it isn't unallocated");
         return false;
       }
     }).catch(function(err) {
