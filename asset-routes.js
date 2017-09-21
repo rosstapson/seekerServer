@@ -306,15 +306,11 @@ function renameFile(fileName) {
 // add one product pin
 
 app.post('/add-pin', function(req, res) {
+  console.log("dnaCode: " + req.body.dnaCode);
   if (!checkToken(req)) {
     return res.status(401).send({errorMessage: "Invalid token"})
   }
-  Product.findOne({dnaCode: req.body.dnaCode}).then(function(product) {
-    return res.status(418).send({errorMessage: "Duplicate DNA Pin"});
-  }, 
-function(err) {
-  console.log("no product found for this pin, so continue.")
-});
+  
   new Product(req.body).save().then(function() {
     return res.status(201).send("Success");
   }), 
