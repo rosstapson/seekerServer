@@ -376,6 +376,9 @@ app.post('/addasset', function (req, res) {
             prod.status = "Allocated";
             prod.allocatedTo = req.body.username;
           })
+          .catch(function(err){
+            return res.status(400).send({errorMessage: "DNA Pin not found"});
+          });
 
         user
           .assets
