@@ -353,7 +353,7 @@ function checkPinIsUnallocated(dnaCode) {
   console.log(dnaCode);
   var prod = Product.findOne({dnaCode: dnaCode})
     .then(function(product) {
-      console.log("product found");
+      console.log("product found: " + prod);
       if (!prod) {
         console.log("except it's null.");
         return false;
