@@ -310,11 +310,15 @@ app.post('/add-pin', function(req, res) {
   if (!checkToken(req)) {
     return res.status(401).send({errorMessage: "Invalid token"})
   }
-  
-  new Product(req.body).save().then(function() {
-    return res.status(201).send("Success");
-  }), 
-  function(err) {
+  try {
+    new Product(req.body).save().then(function() {
+      return res.status(201).send("Success");
+    }), 
+    function(err) {
+      return res.status(500).send({errorMessage: err.message});
+    }
+  }
+  catch(err) {
     return res.status(500).send({errorMessage: err.message});
   }
 });
