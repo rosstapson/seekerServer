@@ -278,6 +278,7 @@ app.post('/file-upload', function (req, res) {
       });
     }
 
+
   function updateAssetImageUrl(username, dnaCode, newName) {
     var _this = this;
     var user = User
@@ -301,6 +302,23 @@ function renameFile(fileName) {
   var arr = fileName.split(".");
   return cuid() + '.' + arr[arr.length - 1]; //last array element presumably '.gif' or whatnot.
 }
+
+// add one product pin
+
+app.post('add-pin', function(req, res) {
+  if (!checkToken(req)) {
+    return res.status(401).send({errorMessage: "Invalid token"})
+  }
+  Product.findOne({dnaCode: req.body.dnaCode}).then(function(product) {
+    return res.status(401).send({errorMessage: "Duplicate DNA Pin"});
+  })
+  new Product(req.body).save().then(function() {
+    return res.status(201).send("Success");
+  }), 
+  function(err) {
+    return res.status(500).send({errorMessage: err.message});
+  }
+});
 //function AddImageUrlToAsset(){};
 
 app.post('/assets', function (req, res) {
