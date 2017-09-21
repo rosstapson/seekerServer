@@ -307,7 +307,7 @@ function renameFile(fileName) {
 
 app.post('/add-pin', function(req, res) {
   console.log("dnaCode: " + req.body.dnaCode);
-  console.log("req.body: " + req.body);
+  console.log("req.body: " + JSON.stringify(req.body));
   if (!checkToken(req)) {
     return res.status(401).send({errorMessage: "Invalid token"})
   }
