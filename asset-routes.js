@@ -306,8 +306,8 @@ function renameFile(fileName) {
 // add one product pin
 
 app.post('/add-pin', function(req, res) {
-  console.log("dnaCode: " + req.body.dnaCode);
-  console.log("req.body: " + JSON.stringify(req.body));
+  // console.log("dnaCode: " + req.body.dnaCode);
+  // console.log("req.body: " + JSON.stringify(req.body));
   if (!checkToken(req)) {
     return res.status(401).send({errorMessage: "Invalid token"})
   }
