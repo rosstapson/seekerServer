@@ -316,7 +316,7 @@ app.post('/add-pin', function(req, res) {
       return res.status(201).send("Success");
     }).catch(function (err) {
       return res.status(500).send({errorMessage: err.message});
-    }
+    });
   }
   catch(err) {
     return res.status(500).send({errorMessage: err.message});
