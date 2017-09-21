@@ -350,15 +350,20 @@ app.post('/assets', function (req, res) {
     })
 });
 function checkPinIsUnallocated(dnaCode) {
+  console.log(dnaCode);
   var prod = Product.findOne({dnaCode: dnaCode})
     .then(function(product) {
+      console.log("product found");
       if (product.status === "Unallocated") {
+        console.log("unallocated it is.");
         return true;
       }
       else {
+        console.log("but it isn't allocated");
         return false;
       }
     }).catch(function(err) {
+      console.log(err.message);
       return false;
     });
 }
