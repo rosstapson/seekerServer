@@ -310,7 +310,7 @@ app.post('/add-pin', function(req, res) {
     return res.status(401).send({errorMessage: "Invalid token"})
   }
   Product.findOne({dnaCode: req.body.dnaCode}).then(function(product) {
-    return res.status(401).send({errorMessage: "Duplicate DNA Pin"});
+    return res.status(418).send({errorMessage: "Duplicate DNA Pin"});
   })
   new Product(req.body).save().then(function() {
     return res.status(201).send("Success");
