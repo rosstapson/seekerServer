@@ -312,10 +312,12 @@ app.post('/add-pin', function(req, res) {
     return res.status(401).send({errorMessage: "Invalid token"})
   }
   try {
-    new Product(req.body).save().then(function() {
-      return res.status(201).send("Success");
+    var product = new Product(req.body);
+    //product.status = "Unallocated";
+    product.save().then(function() {
+      return res.status(201).send({message: "Success"});
     }).catch(function (err) {
-      return res.status(500).send({errorMessage: err.message});
+      return res.status(422).send({errorMessage: err.message});
     });
   }
   catch(err) {
