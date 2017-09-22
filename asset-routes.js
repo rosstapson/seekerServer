@@ -326,7 +326,7 @@ app.post('/add-pin', function(req, res) {
 });
 //function AddImageUrlToAsset(){};
 
-app.get('/assets', function (req, res) {
+app.post('/assets', function (req, res) {
   if (!checkToken(req)) {
             return res.status(401).send({errorMessage: "Invalid token"})
   }
@@ -396,7 +396,7 @@ app.post('/addasset', function (req, res) {
   if (!checkToken(req)) {
             return res.status(401).send({errorMessage: "Invalid token"})
     }
-
+  var prod = null;
   var user = User
     .findOne({username: req.body.username})
     .then(function (user) {
@@ -408,27 +408,32 @@ app.post('/addasset', function (req, res) {
         //var tempAsset = req.body.asset;
 
         //check Product table for dna pin
-        var prod = Product.findOne({dnaCode: req.body.asset.dnaCode})
+        prod = Product.findOne({dnaCode: req.body.asset.dnaCode})
           .then(function(prod) {
             if(!prod) {
               return res.status(400).send({errorMessage: "DNA Pin not found"});
             }
+            console.log("found a non-falsy prod");
             if(prod.status !== 'Unallocated') {
+              console.log("but it's not unallocated");
               return res.status(400).send({errorMessage: "DNA Pin has already been allocated"});
             }
+            console.log("prod seems unallocated");
             prod.status = "Allocated";
             prod.allocatedTo = req.body.username;
           })
+          .catch(function(err) {
+            return res.status(418).send({errorMessage: err.message});
+          });
 
-        user
-          .assets
-          .push(req.body.asset);
-        //user.dateUpdated = Date.now;
+        user.assets.push(req.body.asset);
+        console.log("about to save user");
         user.save(function (err, product, numAffected) {
           if (err){
             res.status(418).send({message: err.message})
           }
           else {
+            console.log("about to save prod");
             prod.save(function (error, product, numAffected) {
               if (error) {
                 res.status(418).send({message: error.message});
@@ -436,15 +441,13 @@ app.post('/addasset', function (req, res) {
               else {
                 res.status(200).send({assets: user.assets});
               }
-            });            
+            });
           }
         });
         
       }
     }, function (err) {
-      return res
-        .status(400)
-        .send({errorMessage: err.message});
+      return res.status(400).send({errorMessage: err.message});
     })
 });
 app.post('/updateasset', function (req, res) {
