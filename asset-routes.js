@@ -421,30 +421,28 @@ app.post('/addasset', function (req, res) {
             console.log("prod seems unallocated");
             prod.status = "Allocated";
             prod.allocatedTo = req.body.username;
+            user.assets.push(req.body.asset);
+            console.log("about to save user");
+            user.save(function (err, product, numAffected) {
+              if (err){
+                res.status(418).send({message: err.message})
+              }
+              else {
+                console.log("about to save prod");
+                prod.save(function (error, product, numAffected) {
+                  if (error) {
+                    res.status(418).send({message: error.message});
+                  }
+                  else {
+                    res.status(200).send({assets: user.assets});
+                  }
+                });
+              }
+            });
           })
           .catch(function(err) {
             return res.status(418).send({errorMessage: err.message});
           });
-
-        user.assets.push(req.body.asset);
-        console.log("about to save user");
-        user.save(function (err, product, numAffected) {
-          if (err){
-            res.status(418).send({message: err.message})
-          }
-          else {
-            console.log("about to save prod");
-            prod.save(function (error, product, numAffected) {
-              if (error) {
-                res.status(418).send({message: error.message});
-              }
-              else {
-                res.status(200).send({assets: user.assets});
-              }
-            });
-          }
-        });
-        
       }
     }, function (err) {
       return res.status(400).send({errorMessage: err.message});
