@@ -326,7 +326,7 @@ app.post('/add-pin', function(req, res) {
 });
 //function AddImageUrlToAsset(){};
 
-app.post('/assets', function (req, res) {
+app.get('/assets', function (req, res) {
   if (!checkToken(req)) {
             return res.status(401).send({errorMessage: "Invalid token"})
   }
@@ -394,38 +394,58 @@ function allocatePin(dnaCode, username) {
 }
 app.post('/addasset', function (req, res) {
   if (!checkToken(req)) {
-    return res.status(401).send({errorMessage: "Invalid token"})
-  }
-  try {
-    var tempPinStatus = checkPinIsUnallocated(req.body.asset.dnaCode);
-    console.log("tempPinStatus: " + tempPinStatus);
-    if (!tempPinStatus) {
-      return res.status(400).send({errorMessage: "DNA Pin not found"});
+            return res.status(401).send({errorMessage: "Invalid token"})
     }
-  }
-  catch(err) {
-    return res.status(500).send({errorMessage: err.message});
-  }
 
-  var user = User.findOne({username: req.body.username})
+  var user = User
+    .findOne({username: req.body.username})
     .then(function (user) {
       if (!user) {
-        return res.status(400).send({errorMessage: "User not found"});
-      }
-      user.assets.push(req.body.asset);       
-      user.save(function (err, product, numAffected) {
-        if (err){
-          return res.status(418).send({message: err.message})
-        }
-        if (!allocatePin(req.body.asset.dnaCode, user.username)) {
-          return res.status(500).send({errorMessage: "Unable to allocate pin"});
-        }
-      });       
-    }, function (err) {
-      return res.status(400).send({errorMessage: err.message});
-    });
+        res
+          .status(400)
+          .send({errorMessage: "User not found"});
+      } else {
+        //var tempAsset = req.body.asset;
 
-    
+        //check Product table for dna pin
+        var prod = Product.findOne({dnaCode: req.body.asset.dnaCode})
+          .then(function(prod) {
+            if(!prod) {
+              return res.status(400).send({errorMessage: "DNA Pin not found"});
+            }
+            if(prod.status !== 'Unallocated') {
+              return res.status(400).send({errorMessage: "DNA Pin has already been allocated"});
+            }
+            prod.status = "Allocated";
+            prod.allocatedTo = req.body.username;
+          })
+
+        user
+          .assets
+          .push(req.body.asset);
+        //user.dateUpdated = Date.now;
+        user.save(function (err, product, numAffected) {
+          if (err){
+            res.status(418).send({message: err.message})
+          }
+          else {
+            prod.save(function (error, product, numAffected) {
+              if (error) {
+                res.status(418).send({message: error.message});
+              }
+              else {
+                res.status(200).send({assets: user.assets});
+              }
+            });            
+          }
+        });
+        
+      }
+    }, function (err) {
+      return res
+        .status(400)
+        .send({errorMessage: err.message});
+    })
 });
 app.post('/updateasset', function (req, res) {
   if (!checkToken(req)) {
