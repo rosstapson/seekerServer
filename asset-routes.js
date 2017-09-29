@@ -42,17 +42,17 @@ app.post('/deleteimage', function(req, res) {
     
   }
   var assetInQuestion = null;
-  var tempUrls = null;
+  var tempImages = null;
   //establish db ref to file url
   var user = User.findOne({username: req.body.username})
   .then(function(user) {
     assetInQuestion = user.assets.find((value) => {      
       return value.dnaCode === req.body.dnaCode;
     });
-    tempUrls = assetInQuestion.imageUrls.filter((value) => {      
-      return value !== req.body.url;
+    tempImages = assetInQuestion.images.filter((image) => {      
+      return image.url !== req.body.url;
     });
-    assetInQuestion.imageUrls = tempUrls;
+    assetInQuestion.images = tempImages;
     assetInQuestion.set("dateUpdated", Date.now());   
     user.save();
     res.status(201).send({message: "Image deleted"});
@@ -80,6 +80,8 @@ app.post('/file-upload', function (req, res) {
   var tempName = '';
   var username = '';
   var dnaCode = 'default';
+  var imageDescription = '';
+  var dateUploaded = Date.now();
   req
     .busboy
     .on('file', function (fieldname, file, filename) {
@@ -88,9 +90,11 @@ app.post('/file-upload', function (req, res) {
       file.pipe(fstream);
       tempName = filename;      
     });
-  req.busboy.on('field', function(fieldName, value) {    
+  req.busboy.on('field', function(fieldName, value) {
+    console.log("Busboy running, fieldname: " + fieldName + ", value: " + value);
     if(fieldName === 'username') {username = value;}
     if(fieldName === 'dnaCode') {dnaCode = value;}
+    if(fieldName === 'imageDescription')  {imageDescription = value}
   });
   req.busboy.on('finish', function() {    
     if (tempName == '' || username == '') {
@@ -133,8 +137,12 @@ app.post('/file-upload', function (req, res) {
       else {
         // scan successful, file clean
         fs.renameSync(oldPath, newPath);        
-        updateAssetImageUrl(username, dnaCode, newName);
-        res.status(201).send({imageUrl: username + '/' + dnaCode + '/' + newName});
+        addImageToAsset(username, dnaCode, newName, imageDescription, dateUploaded);
+        res.status(201).send({
+          imageUrl: username + '/' + dnaCode + '/' + newName,
+          description: imageDescription,
+          dateUploaded: 
+        });
       }
       
   });
@@ -279,14 +287,18 @@ app.post('/file-upload', function (req, res) {
     }
 
 
-  function updateAssetImageUrl(username, dnaCode, newName) {
+  function addImageToAsset(username, dnaCode, newName, imageDescription, dateUploaded) {
     var _this = this;
     var user = User
     .findOne({username: username})
     .then(function(user) {
       for (var i = 0; i < user.assets.length; i++) {
         if (user.assets[i].dnaCode === dnaCode) {
-          user.assets[i].imageUrls.push(username + '/' + dnaCode + '/'+ newName);
+          user.assets[i].images.push({
+            url: username + '/' + dnaCode + '/'+ newName,
+            imageDescription: imageDescription,
+            dateUploaded: dateUploaded
+          });
           user.save();
           break;
         }

@@ -126,9 +126,19 @@ const userSchema = new Schema({
             type: String,
             required: false
         },
-        imageUrls: [{
-            type: String,
-            required: false
+        images: [{
+            url: {
+                type: String,
+                required: false
+            },
+            dateUploaded: {
+                type: 'Date',
+                default: Date.now
+            },
+            imageDescription: {
+                type: String,
+                required: false
+            }
         }],
         location: {
             type: String,
