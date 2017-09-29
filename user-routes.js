@@ -7,7 +7,6 @@ import User from './models/User';
 import sanitizeHtml from 'sanitize-html';
 import nodemailer from 'nodemailer';
 import cuid from 'cuid';
-import slug from 'limax';
 import util from 'util';
 import bcrypt from 'bcrypt';
 import { checkToken } from './auth';
@@ -45,8 +44,7 @@ function addUser(req, res) {
     var plainTextPassword = sanitizeHtml(user.password);
     var hash = bcrypt.hashSync(plainTextPassword, 10);
     user.password = hash;
-    user.accessLevel = 1; // default to 'client' for now.
-    user.slug = slug(user.username.toLowerCase(), { lowercase: true });
+    user.accessLevel = 1; // default to 'client' for now.    
     user.cuid = cuid();
 
     return user.save();
@@ -171,7 +169,7 @@ app.post('/userdetails', function(req, res) {
     var user = User.findOne({
                 username: req.body.username
             }, 'username email password accessLevel companyName telephone contactPerson mobile a' +
-            'ddress fax slug cuid dateAdded dateUpdated', )
+            'ddress fax cuid dateAdded dateUpdated', )
         .then(function(user) {
             res
                 .status(201)
@@ -238,7 +236,7 @@ app.post('/updateuser', function(req, res) {
     var user = User.findOne({
                 username: req.body.username
             }, 'username email password accessLevel companyName telephone contactPerson mobile a' +
-            'ddress fax slug cuid dateAdded dateUpdated', )
+            'ddress fax cuid dateAdded dateUpdated', )
         .then(function(user) {          
             if (req.body.password !== user.password) {
                 req.body.password = bcrypt.hashSync(req.body.password, 10);
