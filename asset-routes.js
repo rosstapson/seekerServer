@@ -38,7 +38,7 @@ app.post('/deleteimage', function(req, res) {
    fs.unlinkSync(__dirname + '/user_images/' + req.body.url);
   }
   catch(err) {
-    console.log("Unable to delete image" + req.body.url + ", possibly invalid url");
+    console.log("Unable to delete image " + req.body.url + ", possibly invalid url");
     
   }
   var assetInQuestion = null;
@@ -139,8 +139,8 @@ app.post('/file-upload', function (req, res) {
         fs.renameSync(oldPath, newPath);        
         addImageToAsset(username, dnaCode, newName, imageDescription, dateUploaded);
         res.status(201).send({
-          imageUrl: username + '/' + dnaCode + '/' + newName,
-          description: imageDescription,
+          url: username + '/' + dnaCode + '/' + newName,
+          imageDescription: imageDescription,
           dateUploaded: dateUploaded
         });
       }
