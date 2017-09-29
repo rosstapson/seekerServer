@@ -7,7 +7,6 @@ import User from './models/User';
 import sanitizeHtml from 'sanitize-html';
 import nodemailer from 'nodemailer';
 import cuid from 'cuid';
-import slug from 'limax';
 import util from 'util';
 import bcrypt from 'bcrypt';
 import { checkToken } from './auth';
@@ -45,8 +44,7 @@ function addUser(req, res) {
     var plainTextPassword = sanitizeHtml(user.password);
     var hash = bcrypt.hashSync(plainTextPassword, 10);
     user.password = hash;
-    user.accessLevel = 1; // default to 'client' for now.
-    user.slug = slug(user.username.toLowerCase(), { lowercase: true });
+    user.accessLevel = 1; // default to 'client' for now.    
     user.cuid = cuid();
 
     return user.save();
@@ -171,7 +169,7 @@ app.post('/userdetails', function(req, res) {
     var user = User.findOne({
                 username: req.body.username
             }, 'username email password accessLevel companyName telephone contactPerson mobile a' +
-            'ddress fax slug cuid dateAdded dateUpdated', )
+            'ddress fax cuid dateAdded dateUpdated', )
         .then(function(user) {
             res
                 .status(201)
@@ -238,7 +236,7 @@ app.post('/updateuser', function(req, res) {
     var user = User.findOne({
                 username: req.body.username
             }, 'username email password accessLevel companyName telephone contactPerson mobile a' +
-            'ddress fax slug cuid dateAdded dateUpdated', )
+            'ddress fax cuid dateAdded dateUpdated', )
         .then(function(user) {          
             if (req.body.password !== user.password) {
                 req.body.password = bcrypt.hashSync(req.body.password, 10);
@@ -483,25 +481,23 @@ app.post('/api/transferAsset', function (req, res) {
                 newAsset.pendingTransfer = false;
                 asset.transferredToUser = user.username;
                 newAsset.pendingTransferToUser = '';
-                
-                asset.imageUrls.forEach(function(url) {
+                newAsset.images = [];
+                asset.images.forEach(function(image) {
                     //simply replace seller foldername with buyer
-                    var newUrl = url.replace(seller.username, user.username);
+                    var newUrl = image.url.replace(seller.username, user.username);
                     //copy the physical file
-                    var fileName = __dirname + '/user_images/' + url;
+                    var fileName = __dirname + '/user_images/' + image.url;
                     var newFileName = __dirname + '/user_images/' + newUrl;
 
                     fs.createReadStream(fileName).pipe(fs.createWriteStream(newFileName)); 
                     //scratch this below stuff - we're physically copying the file during transfer,
                     // and giving the buyer the new file name, as above
 
-                    //fs.renameSync(fileName, newFileName); 
-                    // save new folderName to BOTH assets:
-                    // we're not deleting the asset from the seller
-                    //url = newUrl;
-                    
+                    newImage = Object.assign({}, image);
+                    newImage.url = newUrl;
+                    newAsset.images.push(newImage);
                 })
-                user.assets.push(asset);
+                user.assets.push(newAsset);
                 user.save();
                 seller.save();
                 var successMessage = htmlHeader + 
