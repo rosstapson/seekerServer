@@ -28,8 +28,11 @@ const userSchema = new Schema({
         type: 'Number',
         required: true
     },
-
     companyName: {
+        type: 'String',
+        required: false
+    },    
+    division: {
         type: 'String',
         required: false
     },
