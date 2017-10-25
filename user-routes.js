@@ -168,7 +168,7 @@ app.post('/userdetails', function(req, res) {
     }
     var user = User.findOne({
                 username: req.body.username
-            }, 'username email password accessLevel companyName telephone contactPerson mobile a' +
+            }, 'username email password accessLevel companyName division telephone contactPerson mobile a' +
             'ddress fax cuid dateAdded dateUpdated', )
         .then(function(user) {
             res
