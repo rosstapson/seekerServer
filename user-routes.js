@@ -473,6 +473,8 @@ app.post('/api/transferAsset', function (req, res) {
                 }
                 
                 var newAsset = Object.assign({}, asset);
+                console.log("newAsset.assetCode: " + newAsset.assetCode);
+                console.log("newAsset.dnaCode: " + newAsset.dnaCode);
                 newAsset.status = "Active";
                 asset.status = "Transferred";
                 asset.dateTransferred = Date.now();
