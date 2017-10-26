@@ -485,7 +485,7 @@ app.post('/api/transferAsset', function (req, res) {
                 asset.transferredToUser = user.username;
                 newAsset.pendingTransferToUser = '';
                 newAsset.images = [];
-                newAsset.images.forEach(function(image) {
+                asset.images.forEach(function(image) {
                     //simply replace seller foldername with buyer
                     var newUrl = image.url.replace(seller.username, user.username);
                     //copy the physical file
