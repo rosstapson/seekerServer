@@ -481,7 +481,7 @@ app.post('/api/transferAsset', function (req, res) {
                 newAsset.pendingTransfer = false;
                 asset.transferredToUser = user.username;
                 newAsset.pendingTransferToUser = '';
-                //newAsset.images = [];
+                newAsset.images = [];
                 newAsset.images.forEach(function(image) {
                     //simply replace seller foldername with buyer
                     var newUrl = image.url.replace(seller.username, user.username);
@@ -490,8 +490,8 @@ app.post('/api/transferAsset', function (req, res) {
                     var newFileName = __dirname + '/user_images/' + newUrl;
 
                     fs.createReadStream(fileName).pipe(fs.createWriteStream(newFileName)); 
-                    // update the url on newAsset.image
-                    image.url = newUrl;
+                    // push the new image data to newAsset
+                    newAsset.images.push(image);
                 })
                 user.assets.push(newAsset);
                 user.save();
