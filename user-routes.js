@@ -481,8 +481,8 @@ app.post('/api/transferAsset', function (req, res) {
                 newAsset.pendingTransfer = false;
                 asset.transferredToUser = user.username;
                 newAsset.pendingTransferToUser = '';
-                newAsset.images = [];
-                asset.images.forEach(function(image) {
+                //newAsset.images = [];
+                newAsset.images.forEach(function(image) {
                     //simply replace seller foldername with buyer
                     var newUrl = image.url.replace(seller.username, user.username);
                     //copy the physical file
@@ -490,12 +490,8 @@ app.post('/api/transferAsset', function (req, res) {
                     var newFileName = __dirname + '/user_images/' + newUrl;
 
                     fs.createReadStream(fileName).pipe(fs.createWriteStream(newFileName)); 
-                    //scratch this below stuff - we're physically copying the file during transfer,
-                    // and giving the buyer the new file name, as above
-
-                    newImage = Object.assign({}, image);
-                    newImage.url = newUrl;
-                    newAsset.images.push(newImage);
+                    // update the url on newAsset.image
+                    image.url = newUrl;
                 })
                 user.assets.push(newAsset);
                 user.save();
