@@ -194,18 +194,24 @@ const userSchema = new Schema({
             type: String,
             required: false
         },
-        dateReported: {
-            type: 'Date',
-            required: false
-        },
-        caseNumber: {
-            type: String,
-            required: false
-        },
-        atPoliceStation: {
-            type: String,
-            required: false
-        },
+        incidents: [{
+            dateReported: {
+                type: 'Date',
+                required: false
+            },
+            caseNumber: {
+                type: String,
+                required: false
+            },
+            atPoliceStation: {
+                type: String,
+                required: false
+            },
+            status: {
+                type: String,
+                required: false
+            }
+        }],
         nextAuditDate: {
             type: Date,
             required: false
