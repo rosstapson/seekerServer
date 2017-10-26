@@ -525,16 +525,11 @@ app.post('/deleteasset', function (req, res) {
         });
         asset.images.forEach(function(image) {
           try {
-            fs.unlinkSync(__dirname + '/user_images/' + 
-              user.username + 
-              "/" + 
-              asset.dnaCode +
-              "/" +
-              image.url
+            fs.unlinkSync(__dirname + '/user_images/' + image.url
               );
             }
             catch(err) {
-              console.log("Unable to delete image" + image.url + ", possibly invalid url");
+              console.log("Unable to delete image " + image.url + ", possibly invalid url");
               
             }
         });
