@@ -472,7 +472,8 @@ app.post('/api/transferAsset', function (req, res) {
                     return res.status(404).send("Asset not found!");
                 }
                 
-                var newAsset = Object.assign({}, asset);
+                //var newAsset = Object.assign({}, asset);
+                var newAsset = JSON.parse(JSON.stringify(asset));
                 console.log("newAsset.assetCode: " + newAsset.assetCode);
                 console.log("newAsset.dnaCode: " + newAsset.dnaCode);
                 newAsset.status = "Active";
