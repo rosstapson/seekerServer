@@ -151,7 +151,7 @@ app.post('/users', function(req, res) {
                 console.log(err.errors);
                 return res
                     .status(400)
-                    .send({ errorMessage: err.errors })
+                    .send({ errorMessage: err.message })
             } else {
                 console.log("hmm: " + err.message);
                 return res
