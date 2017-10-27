@@ -161,7 +161,51 @@ app.post('/users', function(req, res) {
         });
 
 });
-
+app.get('/usersByCompany', function(req, res) {
+    if (!checkToken(req)) {
+        return res.status(401).send({errorMessage: "Invalid token"})
+    }
+    var user = User
+        .find({company: req.body})
+        .then(function(users) {
+            if (!users) {
+                res
+                    .status(400)
+                    .send({ errorMessage: "Users not found" });
+            } else {
+                res
+                    .status(200)
+                    .send({ assets: users });
+            }
+        }, function(err) {
+            return res
+                .status(400)
+                .send({ errorMessage: err.message });
+        })
+ });
+    app.get('/usersByCountry', function(req, res) {
+        if (!checkToken(req)) {
+            return res.status(401).send({errorMessage: "Invalid token"})
+        }
+        var user = User
+            .find({address: {country: req.body}})
+            .then(function(users) {
+                if (!users) {
+                    res
+                        .status(400)
+                        .send({ errorMessage: "Users not found" });
+                } else {
+                    res
+                        .status(200)
+                        .send({ assets: users });
+                }
+            }, function(err) {
+                return res
+                    .status(400)
+                    .send({ errorMessage: err.message });
+            })
+     });
+            
 // this to retrieve userdetails, minus assets and cases, for purposes of
 // updating them
 app.post('/userdetails', function(req, res) {
