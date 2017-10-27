@@ -161,7 +161,7 @@ app.post('/users', function(req, res) {
         });
 
 });
-app.get('/usersByCompany', function(req, res) {
+app.post('/usersByCompany', function(req, res) {
     if (!checkToken(req)) {
         return res.status(401).send({errorMessage: "Invalid token"})
     }
@@ -183,7 +183,7 @@ app.get('/usersByCompany', function(req, res) {
                 .send({ errorMessage: err.message });
         })
  });
-    app.get('/usersByCountry', function(req, res) {
+    app.post('/usersByCountry', function(req, res) {
         if (!checkToken(req)) {
             return res.status(401).send({errorMessage: "Invalid token"})
         }
