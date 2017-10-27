@@ -77,10 +77,6 @@ const userSchema = new Schema({
         required: false
     },
 
-    slug: {
-        type: 'String',
-        required: true
-    },
     cuid: {
         type: 'String',
         required: true,
