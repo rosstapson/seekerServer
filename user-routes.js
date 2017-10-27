@@ -165,11 +165,13 @@ app.post('/users', function(req, res) {
 app.options('/file-upload', cors());
 app.post('/usersByCompany', function(req, res) {
     console.log(req.body);
+    let company = req.body.company;
+    console.log(company);
     if (!checkToken(req)) {
         return res.status(401).send({errorMessage: "Invalid token"})
     }
     var user = User
-        .find(req.body)
+        .find({companyName: company})
         .then(function(users) {
             if (!users) {
                 res
