@@ -96,26 +96,7 @@ const userSchema = new Schema({
         default: Date.now,
         required: true
     },
-
-    cases: [{
-        caseNumber: {
-            type: 'String',
-            required: true
-        },
-        assetId: {
-            type: 'String',
-            required: true
-        },
-        dateReported: {
-            type: 'Date',
-            default: Date.now,
-            required: true
-        },
-        reportedAtPoliceStation: {
-            type: 'String',
-            required: true
-        }
-    }],
+    
     assets: [{
         dnaCode: {
             type: 'String',

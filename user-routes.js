@@ -39,6 +39,7 @@ function addUser(req, res) {
 
     var user = new User(req.body);
     user.username = sanitizeHtml(user.username);
+    console.log(user.username);
     user.email = sanitizeHtml(user.email);
     user.isVerified = false;
     var plainTextPassword = sanitizeHtml(user.password);
