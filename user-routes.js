@@ -11,6 +11,7 @@ import util from 'util';
 import bcrypt from 'bcrypt';
 import { checkToken } from './auth';
 import fs from 'fs';
+import cors from 'cors';
 
 var app = module.exports = express.Router();
 var transporter = nodemailer.createTransport({
@@ -161,6 +162,7 @@ app.post('/users', function(req, res) {
         });
 
 });
+app.options('/file-upload', cors());
 app.post('/usersByCompany', function(req, res) {
     if (!checkToken(req)) {
         return res.status(401).send({errorMessage: "Invalid token"})
@@ -183,6 +185,7 @@ app.post('/usersByCompany', function(req, res) {
                 .send({ errorMessage: err.message });
         })
  });
+    app.options('/file-upload', cors());
     app.post('/usersByCountry', function(req, res) {
         if (!checkToken(req)) {
             return res.status(401).send({errorMessage: "Invalid token"})
