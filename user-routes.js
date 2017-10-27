@@ -169,7 +169,7 @@ app.post('/usersByCompany', function(req, res) {
         return res.status(401).send({errorMessage: "Invalid token"})
     }
     var user = User
-        .find({company: req.body})
+        .find(req.body)
         .then(function(users) {
             if (!users) {
                 res
@@ -192,8 +192,9 @@ app.post('/usersByCompany', function(req, res) {
         if (!checkToken(req)) {
             return res.status(401).send({errorMessage: "Invalid token"})
         }
+        var country = req.body;
         var user = User
-            .find({address: {country: req.body}})
+            .find({address: { country }})
             .then(function(users) {
                 if (!users) {
                     res
