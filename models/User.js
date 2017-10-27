@@ -26,7 +26,7 @@ const userSchema = new Schema({
     },
     accessLevel: {
         type: 'Number',
-        required: true
+        required: false
     },
     companyName: {
         type: 'String',

@@ -148,9 +148,10 @@ app.post('/users', function(req, res) {
         })
         .catch(function(err) {
             if (err.message == "User validation failed") {
+                console.log(err.errors);
                 return res
                     .status(400)
-                    .send({ errorMessage: "Username is not available" })
+                    .send({ errorMessage: err.errors })
             } else {
                 console.log("hmm: " + err.message);
                 return res
