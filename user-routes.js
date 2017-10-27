@@ -278,7 +278,9 @@ app.post('/sessions/create', function(req, res) {
                         .send({
                             id_token: createToken(user.username),
                             username: user.username,
-                            accessLevel: user.accessLevel
+                            accessLevel: user.accessLevel,
+                            country: user.address.country,
+                            companyName: user.companyName
                         });
                 }
                 // set id_token on response set last_logged_in on user and update
