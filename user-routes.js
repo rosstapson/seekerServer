@@ -196,7 +196,7 @@ app.post('/usersByCompany', function(req, res) {
         }
         var country = req.body.country;
         var user = User
-            .find({address: { country: country }})
+            .find({'address.country': country })
             .then(function(users) {
                 if (!users) {
                     res
