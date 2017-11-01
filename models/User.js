@@ -172,6 +172,10 @@ const userSchema = new Schema({
             required: false
         },
         incidents: [{
+            incidentID: {
+                type: String,
+                required: false
+            },
             dateReported: {
                 type: 'Date',
                 required: false
@@ -185,6 +189,10 @@ const userSchema = new Schema({
                 required: false
             },
             status: {
+                type: String,
+                required: false
+            },
+            description: {
                 type: String,
                 required: false
             }
