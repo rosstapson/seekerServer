@@ -142,7 +142,7 @@ app.post('/file-upload', function (req, res) {
         res.status(201).send({
           url: username + '/' + dnaCode + '/' + newName,
           imageDescription: imageDescription,
-          dateUploaded: dateUploaded
+          dateUploaded: "Just now"
         });
       }
       
