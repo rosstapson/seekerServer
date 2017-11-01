@@ -138,7 +138,7 @@ app.post('/file-upload', function (req, res) {
         // scan successful, file clean
         fs.renameSync(oldPath, newPath);        
         addImageToAsset(username, dnaCode, newName, imageDescription, dateUploaded);
-        console.log(dateUploaded);
+        //console.log(dateUploaded);
         res.status(201).send({
           url: username + '/' + dnaCode + '/' + newName,
           imageDescription: imageDescription,
