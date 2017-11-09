@@ -101,7 +101,11 @@ app.post('/file-upload', function (req, res) {
       console.log('Error: filename,username = ' + tempName + ',' + username);
       return res.status(500).send({errorMessage: 'Unable to extract user information for upload'});      
     }
-    var dir = './user_images/' + username + '/' + dnaCode;
+    var dir = './user_images/' + username;
+    if (!fs.existsSync(dir)){
+      fs.mkdirSync(dir);
+    }
+    dir = './user_images/' + username + '/' + dnaCode;
     if (!fs.existsSync(dir)){
       fs.mkdirSync(dir);
     }
