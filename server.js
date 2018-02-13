@@ -40,9 +40,11 @@ httpApp.get("*", function (req, res, next) {
     res.redirect("https://" + req.headers.host + req.path);
 });
 
-var httpsOptions = {
-    key: fs.readFileSync("/home/seeker/seekerdnasecure.co.za.key"),
-    cert: fs.readFileSync("/home/seeker/seekerdnasecure.co.za.chained.crt")
+var httpsOptions = {   
+    // key: fs.readFileSync("/home/seeker/seekerdnasecure.co.za.key"),
+    // cert: fs.readFileSync("/home/seeker/seekerdnasecure.co.za.chained.crt")
+    key: fs.readFileSync("/etc/letsencrypt/live/seekerdnasecure.co.za/privkey.pem"),
+    cert: fs.readFileSync("/etc/letsencrypt/live/seekerdnasecure.co.za/fullchain.pem")
 };
 dotenv.load();
 
